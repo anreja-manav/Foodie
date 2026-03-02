@@ -8,6 +8,7 @@ class VendorProfileSerializer(serializers.ModelSerializer):
         fields = [
             'restaurant_name',
             'restaurant_address',
+            'resturant_pic',
             'is_verified',
             'is_open'
         ]

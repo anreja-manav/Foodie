@@ -1,8 +1,8 @@
 from rest_framework import serializers
-from apps.accounts.models import CustomerProfile
+from apps.accounts.models import CustomerAddress
 
 
-class CustomerProfileSerializer(serializers.ModelSerializer):
+class CustomerAddressSerializer(serializers.ModelSerializer):
     class Meta:
-        model = CustomerProfile
-        fields = ['profile_pic', 'address']
+        model = CustomerAddress
+        fields = '__all__'

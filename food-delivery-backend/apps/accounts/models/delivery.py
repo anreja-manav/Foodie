@@ -4,7 +4,6 @@ from .user import Account
 
 class DeliveryProfile(models.Model):
     user = models.OneToOneField(Account, on_delete=models.CASCADE, related_name='delivery_profile')
-    profile_pic = models.ImageField(upload_to='assests/delivery/', null=True, blank=True)
     vehicle_number = models.CharField(max_length=20, unique=True)
     is_available = models.BooleanField(default=True)
 

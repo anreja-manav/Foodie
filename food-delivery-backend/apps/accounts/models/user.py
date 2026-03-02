@@ -32,6 +32,7 @@ class Account(AbstractUser):
     phone = models.CharField(max_length=10)
     name = models.CharField(max_length=100)
     role = models.CharField(max_length=10, choices=ROLE_CHOICES, default='customer')
+    profile_pic = models.ImageField(upload_to='assests/users/', null=True, blank=True, default="assests/users/default_user.png")
 
     USERNAME_FIELD = 'email'
     REQUIRED_FIELDS = ['name', 'phone']

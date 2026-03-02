@@ -89,8 +89,6 @@ class CustomerRegisterSerializer(serializers.ModelSerializer):
     password = serializers.CharField(write_only=True)
     password2 = serializers.CharField(write_only=True)
 
-    address = serializers.CharField(write_only = True, required = False)
-
     class Meta:
         model = Account
         fields = [
@@ -98,8 +96,7 @@ class CustomerRegisterSerializer(serializers.ModelSerializer):
             'name',
             'phone',
             'password',
-            'password2',
-            'address'
+            'password2'
         ]
 
     def validate(self, data):
@@ -111,7 +108,6 @@ class CustomerRegisterSerializer(serializers.ModelSerializer):
     def create(self, validated_data):
         validated_data.pop('password2')
         password = validated_data.pop('password')
-        address = validated_data.pop('address', None)
 
         user = Account.objects.create_user(
             password=password,
@@ -121,7 +117,6 @@ class CustomerRegisterSerializer(serializers.ModelSerializer):
 
         CustomerProfile.objects.create(
             user=user,
-            address=address
         )
 
         return user
