@@ -1,7 +1,6 @@
 from rest_framework.decorators import action
 from rest_framework.response import Response
 from rest_framework import status, viewsets
-from django.shortcuts import get_object_or_404
 
 from apps.accounts.serializers import UserDetailSerializer, CustomerAddressSerializer
 from apps.accounts.models import Account, CustomerProfile, CustomerAddress
@@ -20,6 +19,8 @@ class CustomerViewSet(viewsets.ModelViewSet):
             "Name" : serializer.data['name'],
             "Email" : serializer.data['email'],
             "Phone" : serializer.data['phone'],
+            "Profile Picture" : serializer.data['profile_pic'],
+            "Role" : serializer.data['role'],
             "Addresses" : serializer.data['customer_addresses']
         })
     
@@ -52,6 +53,8 @@ class CustomerViewSet(viewsets.ModelViewSet):
                 "Name" : serializer.data['name'],
                 "Email" : serializer.data['email'],
                 "Phone" : serializer.data['phone'],
+                "Profile Picture" : serializer.data['profile_pic'],
+                "Role" : serializer.data['role'],
                 "Addresses" : serializer.data['customer_addresses']
             })
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)

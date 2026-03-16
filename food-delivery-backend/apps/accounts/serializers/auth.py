@@ -43,6 +43,13 @@ class VendorRegisterSerializer(serializers.ModelSerializer):
 
     restaurant_name = serializers.CharField(write_only = True)
     restaurant_address = serializers.CharField(write_only = True)
+    resturant_pic = serializers.ImageField(write_only = True)
+    restaurant_description = serializers.CharField(write_only = True)
+    GST_number = serializers.CharField(write_only = True)
+    Account_number = serializers.CharField(write_only = True)
+    opening_time = serializers.TimeField(write_only = True)
+    closing_time = serializers.TimeField(write_only = True)
+
 
     class Meta:
         model = Account
@@ -53,7 +60,13 @@ class VendorRegisterSerializer(serializers.ModelSerializer):
             'password',
             'password2',
             'restaurant_name',
-            'restaurant_address'
+            'restaurant_address',
+            'resturant_pic',
+            'restaurant_description',
+            'GST_number',
+            'Account_number',
+            'opening_time',
+            'closing_time'
         ]
 
     def validate(self, data):
@@ -68,6 +81,12 @@ class VendorRegisterSerializer(serializers.ModelSerializer):
 
         restaurant_name = validated_data.pop('restaurant_name')
         restaurant_address = validated_data.pop('restaurant_address')
+        resturant_pic = validated_data.pop('resturant_pic')
+        restaurant_description = validated_data.pop('restaurant_description')
+        GST_number = validated_data.pop('GST_number')
+        Account_number = validated_data.pop('Account_number')
+        opening_time = validated_data.pop('opening_time')
+        closing_time = validated_data.pop('closing_time')
 
         user = Account.objects.create_user(
             password=password,
@@ -79,6 +98,12 @@ class VendorRegisterSerializer(serializers.ModelSerializer):
             user=user,
             restaurant_name=restaurant_name,
             restaurant_address=restaurant_address,
+            resturant_pic=resturant_pic,
+            restaurant_description=restaurant_description,
+            GST_number=GST_number,
+            Account_number=Account_number,
+            opening_time=opening_time,
+            closing_time=closing_time,
             is_verified=False
         )
 
