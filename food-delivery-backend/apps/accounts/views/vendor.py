@@ -3,7 +3,7 @@ from rest_framework.response import Response
 from rest_framework import status, viewsets
 
 from apps.accounts.serializers import UserDetailSerializer
-from apps.accounts.models import Account, VendorProfile
+from apps.accounts.models import Account
 from apps.accounts.permissions import IsVerifiedVendor
 class VendorViewSet(viewsets.ModelViewSet):
 

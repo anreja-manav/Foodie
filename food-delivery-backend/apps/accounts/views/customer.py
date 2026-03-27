@@ -81,7 +81,7 @@ class CustomerViewSet(viewsets.ModelViewSet):
         })
     
     # Add address
-    @action(detail=False, method=['post'], url_path='profile/address/add')
+    @action(detail=False, methods=['post'], url_path='profile/address/add')
     def add_address(self, request):
 
         try:

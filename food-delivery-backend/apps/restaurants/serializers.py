@@ -1,0 +1,66 @@
+
+from rest_framework import serializers
+from apps.restaurants.models import Category, Product, Restaurant
+
+
+
+class ProductSerializer(serializers.ModelSerializer):
+    restaurant = serializers.ReadOnlyField(source='restaurant.restaurant_name')
+    food_type_display = serializers.CharField(source='get_food_type_display', read_only=True)
+    
+    # Custom field to calculate savings percentage on the fly
+    savings_percentage = serializers.SerializerMethodField()
+
+    class Meta:
+        model = Product
+        fields = [
+            'id', 'name', 'description', 'price', 'old_price', 
+            'savings_percentage', 'food_type', 'food_type_display', 
+            'rating', 'image', 'is_available', 'is_bestseller', 'restaurant' 
+        ]
+
+    def get_savings_percentage(self, obj):
+        if obj.old_price and obj.old_price > obj.price:
+            savings = ((obj.old_price - obj.price) / obj.old_price) * 100
+            return round(savings, 0)
+        return 0
+
+
+class CategorySerializer(serializers.ModelSerializer):
+    products = ProductSerializer(many=True, read_only=True)
+
+    class Meta:
+        model = Category
+        fields = ['id', 'name', 'products']
+
+    def get_products(self, obj):
+        restaurant = self.context.get('restaurant')
+        if restaurant:
+            products = obj.products.filter(restaurant=restaurant)
+        else:
+            products = obj.products.all()
+            
+        return ProductSerializer(products, many=True).data
+
+
+
+class RestaurantSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Restaurant
+        fields = [
+            'id',
+            'restaurant_name',
+            'resturant_pic',
+            'restaurant_address', 
+            'city',
+            'pincode',
+            'is_open',
+            'contact_number',
+            'restaurant_description',
+            'GST_number',
+            'Account_number',
+            'fassai_certificate',
+            'opening_time',
+            'closing_time'
+
+        ]
