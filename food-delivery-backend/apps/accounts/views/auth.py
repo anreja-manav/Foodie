@@ -5,12 +5,18 @@ from rest_framework import status, viewsets
 from django.utils.dateparse import parse_date
 from django.contrib.auth.hashers import check_password
 from rest_framework_simplejwt.tokens import RefreshToken
-from apps.accounts.permissions import IsAdmin
+import datetime, random
+from django.conf import settings
+from django.utils import timezone
+from datetime import timedelta
 
+from apps.accounts.permissions import IsAdmin
 from apps.accounts.models import Account
 from apps.accounts.serializers.auth import VendorRegisterSerializer, CustomerRegisterSerializer, DeliveryRegisterSerializer, AdminRegisterSerializer, LoginSerializer
+from apps.accounts.utils import send_otp
 
 class AuthViewSet(viewsets.ModelViewSet):
+    queryset = Account.objects.all()
     def get_serializer_class(self):
         if self.action == "register_customer":
             return CustomerRegisterSerializer
@@ -26,7 +32,71 @@ class AuthViewSet(viewsets.ModelViewSet):
     def get_serializer_context(self):
         context = super().get_serializer_context()
         return context
-    
+
+    @action(detail=True, methods=['patch'], url_path='verify-otp')
+    def verify_otp(self, request, pk=None):
+        instance = self.get_object()
+        provided_otp = request.data.get("otp")
+
+        if (not instance.is_active and 
+            str(instance.otp) == str(provided_otp) and 
+            instance.otp_expiry and 
+            timezone.now() < instance.otp_expiry):
+            
+            instance.is_active = True
+            instance.otp_expiry = None
+            instance.max_otp_try = settings.MAX_OTP_TRY
+            instance.otp_max_out = None
+            instance.save()
+            return Response({"message": "Successfully verified."}, status=status.HTTP_200_OK)
+            
+        return Response({"message": "Invalid OTP or expired."}, status=status.HTTP_400_BAD_REQUEST)
+
+    @action(detail=True, methods=['patch'], url_path='regenerate-otp')
+    def regenerate_otp(self, request, pk=None):
+        instance = self.get_object()
+        
+        # Check lockout
+        if int(instance.max_otp_try) <= 0 and instance.otp_max_out and timezone.now() < instance.otp_max_out:
+            return Response({"message": "Max attempts reached. Try later."}, status=status.HTTP_403_FORBIDDEN)
+
+        otp = random.randint(10000, 99999)
+        instance.otp = otp
+        instance.otp_expiry = timezone.now() + timedelta(minutes=10)
+        instance.max_otp_try = int(instance.max_otp_try) - 1
+
+        if instance.max_otp_try <= 0:
+            instance.otp_max_out = timezone.now() + timedelta(hours=1)
+        
+        instance.save()
+        send_otp(instance.phone, otp)
+
+        return Response({"message": "New OTP sent."}, status=status.HTTP_200_OK)
+
+    @action(detail=False, methods=['post'])
+    def login(self, request):
+        serializer = self.get_serializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        
+        phone = serializer.validated_data['phone']
+        password = serializer.validated_data['password']
+
+        try:
+            user = Account.objects.get(phone=phone)
+        except Account.DoesNotExist:
+            return Response({'message': 'Invalid credentials'}, status=status.HTTP_401_UNAUTHORIZED)
+
+        if not user.check_password(password):
+            return Response({'message': 'Invalid credentials'}, status=status.HTTP_401_UNAUTHORIZED)
+        
+        if not user.is_active:
+            return Response({'message': 'Please verify your OTP first.'}, status=status.HTTP_403_FORBIDDEN)
+
+        refresh = RefreshToken.for_user(user)
+        return Response({
+            'refresh': str(refresh),
+            'access': str(refresh.access_token)
+        })
     #Admin Registration
     @action(detail=False, methods=["post"], url_path="register/admin", permission_classes=[IsAdmin])
     def register_admin(self, request):
@@ -73,34 +143,3 @@ class AuthViewSet(viewsets.ModelViewSet):
             serializer.save()
             return Response(serializer.data, status=status.HTTP_201_CREATED)
         return Response(serializer.errors)
-        
-    #login
-    @action(detail=False, methods=['post'], url_path='login')
-    def login(self, request):
-        serializer = LoginSerializer(data=request.data)
-        if serializer.is_valid():
-            email = serializer.validated_data['email']
-            password = serializer.validated_data['password']
-
-            try:
-                user = Account.objects.get(email=email)
-            except Account.DoesNotExist:
-                return Response({
-                    'status': status.HTTP_404_NOT_FOUND,
-                    'message': 'User not found'
-                })
-
-            if not check_password(password, user.password):
-                return Response({
-                    'status': status.HTTP_400_BAD_REQUEST,
-                    'message': 'Invalid Password'
-                })
-
-            refresh = RefreshToken.for_user(user)
-
-            return Response({
-                'refresh': str(refresh),
-                'access': str(refresh.access_token)
-            })
-
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)

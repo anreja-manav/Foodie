@@ -13,7 +13,6 @@ delete_admin = AdminViewSet.as_view({'delete': 'delete_admin'}, permission_class
 delete_user = AdminViewSet.as_view({'delete': 'delete_user'}, permission_classes=[IsAdmin])
 list_users = AdminViewSet.as_view({'get': 'list_users'}, permission_classes=[IsAdmin])
 
-
 urlpatterns = [
     path('register/delivery', register_delivery, name='register_delivery'),
     path('register/admin', register_admin, name='register_admin'),

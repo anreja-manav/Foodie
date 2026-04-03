@@ -20,7 +20,6 @@ class VendorViewSet(viewsets.ModelViewSet):
             "Phone" : serializer.data['phone'],
             "Profile Picture" : serializer.data['profile_pic'],
             "Role" : serializer.data['role'],
-            "Resturant Details" : serializer.data['vendor_profile']
         })
     
     #Delete Profile
@@ -54,6 +53,5 @@ class VendorViewSet(viewsets.ModelViewSet):
                 "Phone" : serializer.data['phone'],
                 "Profile Picture" : serializer.data['profile_pic'],
                 "Role" : serializer.data['role'],
-                "Resturant Details" : serializer.data['vendor_profile']
             })
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)

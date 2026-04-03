@@ -18,6 +18,10 @@ load_dotenv()
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
+MAX_OTP_TRY = 5
+MIN_PASS_LENGHT = 8
+MAX_PASS_LENGHT = 12
+SMS_API_KEY = os.getenv('SMS_API_KEY')
 
 
 # Quick-start development settings - unsuitable for production

@@ -8,4 +8,4 @@ class DeliveryProfile(models.Model):
     is_available = models.BooleanField(default=True)
 
     def __str__(self):
-        return self.user.email
+        return self.user.name or self.user.email or f"Delivery {self.id}"

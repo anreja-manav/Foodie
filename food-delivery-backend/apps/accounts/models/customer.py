@@ -6,7 +6,7 @@ class CustomerProfile(models.Model):
     user = models.OneToOneField(Account, on_delete=models.CASCADE, related_name='customer_profile')
 
     def __str__(self):
-        return self.user.email
+        return self.user.name or self.user.email or f"Customer {self.id}"
     
 
 class CustomerAddress(models.Model):

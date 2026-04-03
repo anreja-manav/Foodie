@@ -54,12 +54,12 @@ class AdminViewSet(viewsets.ModelViewSet):
     # Verify Vendor
     @action(detail = False, methods=['patch'], url_path = 'verify/vendor', permission_classes=[IsAdmin])
     def verify_vendor(self, request):
-        email = request.data.get("email", "").strip()
+        phone = request.data.get("phone")
 
-        if not email:
-            return Response({"error": "Email is required"}, status=400)
+        if not phone:
+            return Response({"error": "Phone Number is required"}, status=400)
 
-        vendor = get_object_or_404(Account, email=email, role='vendor')
+        vendor = get_object_or_404(Account, phone=phone, role='vendor')
         vendor_profile = vendor.vendor_profile
 
         vendor_profile.is_verified = True
@@ -100,12 +100,12 @@ class AdminViewSet(viewsets.ModelViewSet):
     # Delete User
     @action(detail=False, methods=['delete'], url_path='admin/delete/user', permission_classes=[IsAdmin])
     def delete_user(self, request):
-        email = request.data.get('email')
-        if not email:
-            return Response({'detail': 'email is required'}, status=status.HTTP_400_BAD_REQUEST)
+        phone = request.data.get('phone')
+        if not phone:
+            return Response({'detail': 'Phone Number is required'}, status=status.HTTP_400_BAD_REQUEST)
 
         try:
-            instance = Account.objects.get(email=email)
+            instance = Account.objects.get(phone=phone)
         except Account.DoesNotExist:
             return Response({'detail': 'User not found'}, status=status.HTTP_404_NOT_FOUND)
 

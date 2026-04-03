@@ -1,12 +1,31 @@
 from rest_framework import serializers
 from apps.accounts.models import Account, CustomerProfile, VendorProfile, DeliveryProfile
 from django.db import transaction
+from django.conf import settings
+import random
+from datetime import datetime, timedelta
+from apps.accounts.utils import send_otp
+
 
 
 # Admin Register Serializer
 class AdminRegisterSerializer(serializers.ModelSerializer):
-    password = serializers.CharField(write_only=True)
-    password2 = serializers.CharField(write_only=True)
+    password = serializers.CharField(
+        write_only=True,
+        min_length = settings.MIN_PASS_LENGHT,
+        max_length = settings.MAX_PASS_LENGHT,
+        error_messages = {
+            "error": f"Password lenght must lie between {settings.MIN_PASS_LENGHT} and {settings.MAX_PASS_LENGHT} characters."
+        }
+    )
+    password2 = serializers.CharField(
+        write_only=True,
+        min_length = settings.MIN_PASS_LENGHT,
+        max_length = settings.MAX_PASS_LENGHT,
+        error_messages = {
+            "error": f"Password lenght must lie between {settings.MIN_PASS_LENGHT} and {settings.MAX_PASS_LENGHT} characters."
+        }
+    )
 
     class Meta:
         model = Account
@@ -25,21 +44,43 @@ class AdminRegisterSerializer(serializers.ModelSerializer):
 
     @transaction.atomic
     def create(self, validated_data):
+        otp = random.randint(10000, 99999)
+        otp_expiry = datetime.now() + timedelta(minutes=10)
         validated_data.pop('password2')
         password = validated_data.pop('password')
 
         user = Account.objects.create_user(
             password=password,
             role="admin",
+            otp = otp,
+            otp_expiry = otp_expiry,
+            max_otp_try = settings.MAX_OTP_TRY,
             **validated_data
         )
-
+        try:
+            send_otp(user.phone, otp)
+        except Exception as e:
+            print(f"Failed to send OTP: {e}")
         return user
 
 #Vendor Register Serializer
 class VendorRegisterSerializer(serializers.ModelSerializer):
-    password = serializers.CharField(write_only=True)
-    password2 = serializers.CharField(write_only=True)
+    password = serializers.CharField(
+        write_only=True,
+        min_length = settings.MIN_PASS_LENGHT,
+        max_length = settings.MAX_PASS_LENGHT,
+        error_messages = {
+            "error": f"Password lenght must lie between {settings.MIN_PASS_LENGHT} and {settings.MAX_PASS_LENGHT} characters."
+        }
+    )
+    password2 = serializers.CharField(
+        write_only=True,
+        min_length = settings.MIN_PASS_LENGHT,
+        max_length = settings.MAX_PASS_LENGHT,
+        error_messages = {
+            "error": f"Password lenght must lie between {settings.MIN_PASS_LENGHT} and {settings.MAX_PASS_LENGHT} characters."
+        }
+    )
 
     class Meta:
         model = Account
@@ -58,23 +99,24 @@ class VendorRegisterSerializer(serializers.ModelSerializer):
 
     @transaction.atomic
     def create(self, validated_data):
+        otp = random.randint(10000, 99999)
+        otp_expiry = datetime.now() + timedelta(minutes=10)
         validated_data.pop('password2')
         password = validated_data.pop('password')
 
-        # restaurant_name = validated_data.pop('restaurant_name')
-        # restaurant_address = validated_data.pop('restaurant_address')
-        # resturant_pic = validated_data.pop('resturant_pic')
-        # restaurant_description = validated_data.pop('restaurant_description')
-        # GST_number = validated_data.pop('GST_number')
-        # Account_number = validated_data.pop('Account_number')
-        # opening_time = validated_data.pop('opening_time')
-        # closing_time = validated_data.pop('closing_time')
-
         user = Account.objects.create_user(
             password=password,
-            role="vendor",
+            role="admin",
+            otp = otp,
+            otp_expiry = otp_expiry,
+            max_otp_try = settings.MAX_OTP_TRY,
+            is_active = False,
             **validated_data
         )
+        try:
+            send_otp(user.phone, otp)
+        except Exception as e:
+            print(f"Failed to send OTP: {e}")
 
         VendorProfile.objects.create(
             user=user,
@@ -85,8 +127,22 @@ class VendorRegisterSerializer(serializers.ModelSerializer):
 
 #Customer Register Serializer
 class CustomerRegisterSerializer(serializers.ModelSerializer):
-    password = serializers.CharField(write_only=True)
-    password2 = serializers.CharField(write_only=True)
+    password = serializers.CharField(
+        write_only=True,
+        min_length = settings.MIN_PASS_LENGHT,
+        max_length = settings.MAX_PASS_LENGHT,
+        error_messages = {
+            "error": f"Password lenght must lie between {settings.MIN_PASS_LENGHT} and {settings.MAX_PASS_LENGHT} characters."
+        }
+    )
+    password2 = serializers.CharField(
+        write_only=True,
+        min_length = settings.MIN_PASS_LENGHT,
+        max_length = settings.MAX_PASS_LENGHT,
+        error_messages = {
+            "error": f"Password lenght must lie between {settings.MIN_PASS_LENGHT} and {settings.MAX_PASS_LENGHT} characters."
+        }
+    )
 
     class Meta:
         model = Account
@@ -105,14 +161,24 @@ class CustomerRegisterSerializer(serializers.ModelSerializer):
 
     @transaction.atomic
     def create(self, validated_data):
+        otp = random.randint(10000, 99999)
+        otp_expiry = datetime.now() + timedelta(minutes=10)
         validated_data.pop('password2')
         password = validated_data.pop('password')
 
         user = Account.objects.create_user(
             password=password,
-            role="customer",
+            role="admin",
+            otp = otp,
+            otp_expiry = otp_expiry,
+            max_otp_try = settings.MAX_OTP_TRY,
+            is_active = False,
             **validated_data
         )
+        try:
+            send_otp(user.phone, otp)
+        except Exception as e:
+            print(f"Failed to send OTP: {e}")
 
         CustomerProfile.objects.create(
             user=user,
@@ -124,8 +190,22 @@ class CustomerRegisterSerializer(serializers.ModelSerializer):
 #Deliver Register Serializer
 
 class DeliveryRegisterSerializer(serializers.ModelSerializer):
-    password = serializers.CharField(write_only=True)
-    password2 = serializers.CharField(write_only=True)
+    password = serializers.CharField(
+        write_only=True,
+        min_length = settings.MIN_PASS_LENGHT,
+        max_length = settings.MAX_PASS_LENGHT,
+        error_messages = {
+            "error": f"Password lenght must lie between {settings.MIN_PASS_LENGHT} and {settings.MAX_PASS_LENGHT} characters."
+        }
+    )
+    password2 = serializers.CharField(
+        write_only=True,
+        min_length = settings.MIN_PASS_LENGHT,
+        max_length = settings.MAX_PASS_LENGHT,
+        error_messages = {
+            "error": f"Password lenght must lie between {settings.MIN_PASS_LENGHT} and {settings.MAX_PASS_LENGHT} characters."
+        }
+    )
 
     vehicle_number = serializers.CharField(write_only = True)
 
@@ -147,15 +227,25 @@ class DeliveryRegisterSerializer(serializers.ModelSerializer):
 
     @transaction.atomic
     def create(self, validated_data):
+        otp = random.randint(10000, 99999)
+        otp_expiry = datetime.now() + timedelta(minutes=10)
         validated_data.pop('password2')
         password = validated_data.pop('password')
         vehicle_number = validated_data.pop('vehicle_number')
 
         user = Account.objects.create_user(
             password=password,
-            role="delivery",
+            role="admin",
+            otp = otp,
+            otp_expiry = otp_expiry,
+            max_otp_try = settings.MAX_OTP_TRY,
+            is_active = False,
             **validated_data
         )
+        try:
+            send_otp(user.phone, otp)
+        except Exception as e:
+            print(f"Failed to send OTP: {e}")
 
         DeliveryProfile.objects.create(
             user = user,
@@ -167,5 +257,5 @@ class DeliveryRegisterSerializer(serializers.ModelSerializer):
 
 
 class LoginSerializer(serializers.Serializer):
-    email = serializers.EmailField()
+    phone = serializers.IntegerField()
     password = serializers.CharField()
