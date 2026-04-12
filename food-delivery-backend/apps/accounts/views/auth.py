@@ -2,6 +2,7 @@ from django.shortcuts import render
 from rest_framework.decorators import action
 from rest_framework.response import Response
 from rest_framework import status, viewsets
+from rest_framework.permissions import AllowAny
 from django.utils.dateparse import parse_date
 from django.contrib.auth.hashers import check_password
 from rest_framework_simplejwt.tokens import RefreshToken
@@ -33,7 +34,7 @@ class AuthViewSet(viewsets.ModelViewSet):
         context = super().get_serializer_context()
         return context
 
-    @action(detail=True, methods=['patch'], url_path='verify-otp')
+    @action(detail=True, methods=['patch'], url_path='verify_otp')
     def verify_otp(self, request, pk=None):
         instance = self.get_object()
         provided_otp = request.data.get("otp")
@@ -48,17 +49,26 @@ class AuthViewSet(viewsets.ModelViewSet):
             instance.max_otp_try = settings.MAX_OTP_TRY
             instance.otp_max_out = None
             instance.save()
-            return Response({"message": "Successfully verified."}, status=status.HTTP_200_OK)
+            return Response({
+                "message": "Successfully verified. You can login your account",
+                "error": False
+            }, status=status.HTTP_200_OK)
             
-        return Response({"message": "Invalid OTP or expired."}, status=status.HTTP_400_BAD_REQUEST)
+        return Response({
+            "message": "Invalid OTP or expired.",
+            "error": True
+            }, status=status.HTTP_400_BAD_REQUEST)
 
-    @action(detail=True, methods=['patch'], url_path='regenerate-otp')
+    @action(detail=True, methods=['patch'], url_path='regenerate_otp')
     def regenerate_otp(self, request, pk=None):
         instance = self.get_object()
         
         # Check lockout
         if int(instance.max_otp_try) <= 0 and instance.otp_max_out and timezone.now() < instance.otp_max_out:
-            return Response({"message": "Max attempts reached. Try later."}, status=status.HTTP_403_FORBIDDEN)
+            return Response({
+                "message": "Max attempts reached. Try later.",
+                "error": True
+            }, status=status.HTTP_403_FORBIDDEN)
 
         otp = random.randint(10000, 99999)
         instance.otp = otp
@@ -71,7 +81,10 @@ class AuthViewSet(viewsets.ModelViewSet):
         instance.save()
         send_otp(instance.phone, otp)
 
-        return Response({"message": "New OTP sent."}, status=status.HTTP_200_OK)
+        return Response({
+            "message": "New OTP sent.",
+            "error": False
+        }, status=status.HTTP_200_OK)
 
     @action(detail=False, methods=['post'])
     def login(self, request):
@@ -84,16 +97,27 @@ class AuthViewSet(viewsets.ModelViewSet):
         try:
             user = Account.objects.get(phone=phone)
         except Account.DoesNotExist:
-            return Response({'message': 'Invalid credentials'}, status=status.HTTP_401_UNAUTHORIZED)
+            return Response({
+                'message': 'Invalid credentials',
+                "error": True
+            }, status=status.HTTP_401_UNAUTHORIZED)
 
         if not user.check_password(password):
-            return Response({'message': 'Invalid credentials'}, status=status.HTTP_401_UNAUTHORIZED)
+            return Response({
+                'message': 'Invalid credentials',
+                "error": True
+            }, status=status.HTTP_401_UNAUTHORIZED)
         
         if not user.is_active:
-            return Response({'message': 'Please verify your OTP first.'}, status=status.HTTP_403_FORBIDDEN)
+            return Response({
+                'message': 'Please verify your OTP first.',
+                "error": True
+            }, status=status.HTTP_403_FORBIDDEN)
 
         refresh = RefreshToken.for_user(user)
         return Response({
+            "message": "Success",
+            "error": False,
             'refresh': str(refresh),
             'access': str(refresh.access_token)
         })
@@ -117,8 +141,16 @@ class AuthViewSet(viewsets.ModelViewSet):
         )
         if serializer.is_valid():
             serializer.save()
-            return Response(serializer.data, status=status.HTTP_201_CREATED)
-        return Response(serializer.errors)
+            return Response({
+                "message": "Otp Sent to your registered number",
+                "error": False,
+                "data": serializer.data
+            }, status=status.HTTP_201_CREATED)
+        return Response({
+            "message": "User Created",
+            "error": True,
+            "data":serializer.errors
+        }, status=status.HTTP_403_FORBIDDEN)
 
     #Vendor Registration
     @action(detail=False, methods=["post"], url_path="register/vendor")
