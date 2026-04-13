@@ -21,30 +21,29 @@ const Login = () => {
     const context = useContext(MyContext);
     const history = useNavigate();
 
-    // const forgotPassword = () => {
+    const forgotPassword = () => {
 
-    //     if (formFields.phone===""){
-    //         context.alertBox("error","Please enter Phone Number");
-    //         return false;
-    //     }
-    //     else {
-    //         context.alertBox("success", `OTP sent to ${formFields.phone}`);
-    //         localStorage.setItem("username", formFields.phone);
-    //         localStorage.setItem("actionType", "forgot-password");
+        if (formFields.phone===""){
+            context.alertBox("error","Please enter Phone Number");
+            return false;
+        }
 
-    //         postData("/api/user/forgot-password", {
-    //             phone:formFields.phone,
-    //         }).then((res)=>{
-    //             if(res?.error===false){
-    //                 context.alertBox("success", res?.message);
-    //                 history("/verify");
-    //             } else {
-    //                 context.alertBox("error", res?.message);
-    //             }
-    //         })
-    //     }
+        postData("/accounts/forgot_password/", {
+            phone:formFields.phone,
+        }).then((res)=>{
+            if(res?.error===false){
+                context.alertBox("success", res?.message);
+                localStorage.setItem("userId", res?.user_id);
+                localStorage.setItem("action", "forgot_password");
+                localStorage.setItem("username", formFields.phone )
+                history("/verify");
+            } else {
+                context.alertBox("error", res?.message);
+            }
+        })
+        
 
-    // }
+    }
 
     const onChangeInput = (e) => {
         const {name, value} = e.target;
@@ -90,6 +89,7 @@ const Login = () => {
 
                 localStorage.setItem("accessToken", res?.access);
                 localStorage.setItem("refreshToken", res?.refresh);
+                localStorage.setItem("userId", res?.user_id);
 
                 context.setIsLogin(true);
 
@@ -166,7 +166,7 @@ const Login = () => {
                     </div>
 
                     {/* Forgot Password */}
-                    <a className="link cursor-pointer text-[12px] sm:text-[14px] font-semibold self-end">
+                    <a className="link cursor-pointer text-[12px] sm:text-[14px] font-semibold self-end" onClick={forgotPassword}>
                     Forgot Password?
                     </a>
 

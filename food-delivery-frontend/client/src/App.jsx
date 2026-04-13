@@ -5,6 +5,7 @@ import './App.css'
 import Register from './pages/Register'
 import Verify from './pages/verify';
 import Login from './pages/Login';
+import ForgotPassword from './pages/reset_password';
 
 export const MyContext = React.createContext();
 
@@ -33,6 +34,7 @@ function App() {
             <Route path="/register" element={<Register />} />
             <Route path='/verify' element={<Verify />} />
             <Route path='/login' element={<Login />} />
+            <Route path='/forgot_password/confirm' element={<ForgotPassword />} />
           </Routes>
         </MyContext.Provider>
         <ToastContainer />

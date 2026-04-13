@@ -106,7 +106,7 @@ class VendorRegisterSerializer(serializers.ModelSerializer):
 
         user = Account.objects.create_user(
             password=password,
-            role="admin",
+            role="vendor",
             otp = otp,
             otp_expiry = otp_expiry,
             max_otp_try = settings.MAX_OTP_TRY,
@@ -169,7 +169,7 @@ class CustomerRegisterSerializer(serializers.ModelSerializer):
 
         user = Account.objects.create_user(
             password=password,
-            role="admin",
+            role="customer",
             otp = otp,
             otp_expiry = otp_expiry,
             max_otp_try = settings.MAX_OTP_TRY,
@@ -236,7 +236,7 @@ class DeliveryRegisterSerializer(serializers.ModelSerializer):
 
         user = Account.objects.create_user(
             password=password,
-            role="admin",
+            role="delivery",
             otp = otp,
             otp_expiry = otp_expiry,
             max_otp_try = settings.MAX_OTP_TRY,

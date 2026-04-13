@@ -15,6 +15,7 @@ from apps.accounts.permissions import IsAdmin
 from apps.accounts.models import Account
 from apps.accounts.serializers.auth import VendorRegisterSerializer, CustomerRegisterSerializer, DeliveryRegisterSerializer, AdminRegisterSerializer, LoginSerializer
 from apps.accounts.utils import send_otp
+from apps.accounts.serializers.forgot_password import ForgotPasswordSerializer, ResetPasswordConfirmSerializer
 
 class AuthViewSet(viewsets.ModelViewSet):
     queryset = Account.objects.all()
@@ -29,41 +30,73 @@ class AuthViewSet(viewsets.ModelViewSet):
             return AdminRegisterSerializer
         if self.action == "login":
             return LoginSerializer
+        if self.action == "forgot_password":
+            return ForgotPasswordSerializer
+        if self.action == "reset_password_confirm":
+            return ResetPasswordConfirmSerializer
 
     def get_serializer_context(self):
         context = super().get_serializer_context()
         return context
+    
+
+    @action(detail=False, methods=['post'], url_path='forgot_password')
+    def forgot_password(self, request):
+        serializer = self.get_serializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        
+        phone = serializer.validated_data['phone']
+        if not phone:
+            return Response({
+                "message": "Phone Number is required",
+                "error": True
+            }, status=400)
+        user = Account.objects.filter(phone=phone).first()
+
+        if not user:
+            return Response({"message": "User not found.", "error": True}, status=404)
+
+        # Generate and send OTP
+        otp = random.randint(10000, 99999)
+        user.otp = otp
+        user.otp_expiry = timezone.now() + timedelta(minutes=10)
+        user.save()
+        
+        send_otp(user.phone, otp)
+
+        return Response({
+            "message": "OTP sent successfully.",
+            "user_id": user.id,
+            "error": False
+        }, status=status.HTTP_200_OK)
 
     @action(detail=True, methods=['patch'], url_path='verify_otp')
     def verify_otp(self, request, pk=None):
         instance = self.get_object()
         provided_otp = request.data.get("otp")
 
-        if (not instance.is_active and 
-            str(instance.otp) == str(provided_otp) and 
+        if (str(instance.otp) == str(provided_otp) and 
             instance.otp_expiry and 
             timezone.now() < instance.otp_expiry):
             
-            instance.is_active = True
-            instance.otp_expiry = None
-            instance.max_otp_try = settings.MAX_OTP_TRY
-            instance.otp_max_out = None
+            # Activation logic for new users
+            if not instance.is_active:
+                instance.is_active = True
+            
+            instance.otp_expiry = timezone.now() + timedelta(minutes=5)
             instance.save()
+            
             return Response({
-                "message": "Successfully verified. You can login your account",
+                "message": "OTP verified successfully.",
                 "error": False
             }, status=status.HTTP_200_OK)
             
-        return Response({
-            "message": "Invalid OTP or expired.",
-            "error": True
-            }, status=status.HTTP_400_BAD_REQUEST)
+        return Response({"message": "Invalid or expired OTP.", "error": True}, status=400)
 
     @action(detail=True, methods=['patch'], url_path='regenerate_otp')
     def regenerate_otp(self, request, pk=None):
         instance = self.get_object()
         
-        # Check lockout
         if int(instance.max_otp_try) <= 0 and instance.otp_max_out and timezone.now() < instance.otp_max_out:
             return Response({
                 "message": "Max attempts reached. Try later.",
@@ -85,6 +118,35 @@ class AuthViewSet(viewsets.ModelViewSet):
             "message": "New OTP sent.",
             "error": False
         }, status=status.HTTP_200_OK)
+
+    @action(detail=True, methods=['patch'], url_path='confirm')
+    def reset_password_confirm(self, request, pk=None):
+        instance = self.get_object()
+        
+        serializer = self.get_serializer(data=request.data)
+        if not serializer.is_valid():
+            return Response({
+                "message": "Validation failed",
+                "data": serializer.errors,
+                "error": True
+            }, status=status.HTTP_400_BAD_REQUEST)
+
+        provided_otp = str(serializer.validated_data['otp'])
+        db_otp = str(instance.otp)
+        new_password = serializer.validated_data['new_password']
+
+        # Strict check
+        if db_otp == provided_otp and instance.otp_expiry and instance.otp_expiry > timezone.now():
+            instance.set_password(new_password)
+            instance.otp = "" 
+            instance.otp_expiry = None
+            instance.save()
+            return Response({"message": "Password updated.", "error": False}, status=200)
+
+        return Response({
+            "message": "OTP mismatch or session expired.",
+            "error": True
+        }, status=400)
 
     @action(detail=False, methods=['post'])
     def login(self, request):
@@ -118,6 +180,7 @@ class AuthViewSet(viewsets.ModelViewSet):
         return Response({
             "message": "Success",
             "error": False,
+            "user_id": user.id,
             'refresh': str(refresh),
             'access': str(refresh.access_token)
         })
