@@ -1,6 +1,6 @@
 import React, { useContext } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import logo from "../../../../../Assests/FoodieLogo.jpg"
+import logo from "../../../../../Assests/Logo.jpg"
 import Badge from "@mui/material/Badge";
 import { styled } from "@mui/material/styles";
 import IconButton from "@mui/material/IconButton";
@@ -57,14 +57,9 @@ const Header = () => {
 
   return (
     <>
-      <header className="bg-white">
-          <div className=" header container flex flex-row items-center justify-between gap-4 lg:gap-3">
-            {
-              context.windowWidth < 992 &&
-              <Button className="w-8.75! min-w-8.75! h-8.75! rounded-full! text-gray-800!">
-                <FiMenu size={22} />
-              </Button>
-            }
+      <header className= "bg-[#1E2A56]! w-full!">
+          <div className=" header  flex flex-row items-center justify-between gap-4 lg:gap-3 border-5-white mb-3!">
+            
 
             <div className="col1 w-[30%] lg:w-[15%]">
               <Link to={"/"}>
@@ -104,7 +99,7 @@ const Header = () => {
                 </div>
               </>
             )}
-            <div className="col3 w-[10%] lg:w-[30%] flex items-center pl-7">
+            <div className="col3 w-[10%] lg:w-[30%] flex items-center pl-7 text-white!">
               <ul className="flex items-center justify-center gap-0 lg:gap-3 w-full">
                 {
                   context.isLogin === false && context.windowWidth > 992 ?
@@ -136,8 +131,8 @@ const Header = () => {
                               <Button className="w-10! h-10! min-w-10! rounded-full! bg-[#f1f1f1]!">
                                 <FaRegUser className="text-[16px] text-[rgba(0,0,0,0.7)]" />
                               </Button>
-                              <div className="info flex flex-col max-w-40">
-                                <h4 className=" leading-3 text-[14px] text-[rgba(0,0,0,0.6)] font-medium mb-0 capitalize text-left justify-start truncate">{context?.userData?.Name}</h4>
+                              <div className="info flex flex-col max-w-40 ">
+                                <h4 className=" leading-3 text-[13px] text-white! font-medium mb-0 capitalize text-left justify-start truncate">{context?.userData?.Name}</h4>
                               </div>
                             </Button>
                             <Menu

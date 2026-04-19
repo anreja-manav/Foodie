@@ -31,7 +31,7 @@ class CategorySerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Category
-        fields = ['id', 'name', 'products']
+        fields = ['id', 'name', 'products', 'image']
 
     def get_products(self, obj):
         restaurant = self.context.get('restaurant')
