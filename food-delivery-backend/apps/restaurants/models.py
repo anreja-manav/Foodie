@@ -3,6 +3,7 @@ from apps.accounts.models.vendor import VendorProfile
 
 class Category(models.Model):
     name = models.CharField(max_length=100)
+    image = models.ImageField(upload_to='categories/')
 
     class Meta:
         verbose_name_plural = "Categories"
@@ -12,7 +13,7 @@ class Category(models.Model):
     
 class Restaurant(models.Model):
     vendor = models.OneToOneField(VendorProfile, on_delete=models.CASCADE, related_name='restaurant')
-    resturant_pic = models.ImageField(upload_to='assets/restaurants/', null=True, blank=True)
+    resturant_pic = models.ImageField(upload_to='restaurants/', null=True, blank=True)
     restaurant_name = models.CharField(max_length=255)
     restaurant_address = models.TextField()
     city = models.CharField(max_length=100)
@@ -22,7 +23,7 @@ class Restaurant(models.Model):
     GST_number = models.CharField(max_length=100)
 
     Account_number = models.CharField(max_length=100, null=True, blank=True)
-    fassai_certificate = models.ImageField(upload_to='assets/restaurants/certificate/', null=True, blank=True)
+    fassai_certificate = models.ImageField(upload_to='restaurants/certificate/', null=True, blank=True)
     is_open = models.BooleanField(default=True)
     opening_time = models.TimeField(null=True, blank=True)
     closing_time = models.TimeField(null=True, blank=True)

@@ -8,6 +8,7 @@ import Login from './pages/Login';
 import ForgotPassword from './pages/reset_password';
 import Header from './components/Header';
 import { fetchDataFromApi } from './utils/api';
+import Home from './pages/Home';
 
 export const MyContext = React.createContext();
 
@@ -18,6 +19,8 @@ function App() {
   const [isLogin, setIsLogin] = useState(false);
   const [windowWidth, setWindowWidth] = React.useState(window.innerWidth);
   const [userData, setUserData] = useState(null);
+  const [catData, setCatData] = React.useState([]);
+  const [cat, setCat] = React.useState([]);
 
 
   useEffect(() => {
@@ -33,6 +36,7 @@ function App() {
   });
 
   useEffect(() => {
+    getCat();
     const token = localStorage.getItem("accessToken");
 
     if (token) {
@@ -44,11 +48,10 @@ function App() {
     }
   }, [isLogin]);
 
+
   const getUserDetails = () => {
     fetchDataFromApi(`accounts/customer/profile`).then((res) => {
       setUserData(res);
-      console.log(res.ID);
-      // console.log(userData);
       localStorage.setItem("userId", res.ID);
 
       if (res?.response?.data?.error === true) {
@@ -61,6 +64,17 @@ function App() {
       }
     });
   };
+
+
+  const getCat = () => {
+    fetchDataFromApi("/restaurants/categories").then((res) => {
+      if (res?.error !== false) {
+        alertBox("error", "Something went wrong");
+        return false;
+      }
+      setCat(res?.data);
+    });
+  }
 
 
   const alertBox = (type, msg) => {
@@ -76,6 +90,10 @@ function App() {
     userData,
     setUserData,
     getUserDetails,
+    cat,
+    setCat,
+    catData,
+    setCatData,
   };
 
   return (
@@ -84,6 +102,7 @@ function App() {
         <MyContext.Provider value={values}>
           <Header />
           <Routes>
+            <Route path='/' element={<Home />} />
             <Route path="/register" element={<Register />} />
             <Route path='/verify' element={<Verify />} />
             <Route path='/login' element={<Login />} />

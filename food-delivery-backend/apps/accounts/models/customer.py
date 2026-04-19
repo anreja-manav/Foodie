@@ -30,4 +30,4 @@ class CustomerAddress(models.Model):
         super().save(*args, **kwargs)
 
     def __str__(self):
-        return f"{self.customer.user.email} - {self.city}"
+        return f"{self.customer.user.name} - {self.city}"

@@ -4,7 +4,7 @@ from django.core.validators import RegexValidator, validate_email
 from django.conf import settings
 
 phone_regex = RegexValidator(
-    regex=r"^\d{10}", message="phone number must be 10 digits only" 
+    regex=r"^(\+\d{1,3})?\d{10}$", message="phone number must be 10 digits only" 
 )
 
 class CustomUserManager(BaseUserManager):
@@ -42,7 +42,7 @@ class Account(AbstractUser, PermissionsMixin):
     otp_max_out = models.DateTimeField(max_length=2, blank=True, null=True)
     name = models.CharField(max_length=100, null=True, blank=True)
     role = models.CharField(max_length=10, choices=ROLE_CHOICES, default='customer')
-    profile_pic = models.ImageField(upload_to='assets/users/', null=True, blank=True, default="assests/users/default_user.png")
+    profile_pic = models.ImageField(upload_to='users/', null=True, blank=True, default="users/default_user.png")
 
     USERNAME_FIELD = 'phone'
 

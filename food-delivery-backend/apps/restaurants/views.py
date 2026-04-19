@@ -15,7 +15,6 @@ from .utils import get_city
 class CategoryViewSet(viewsets.ModelViewSet):
     queryset = Category.objects.all()
     serializer_class = CategorySerializer
-    permission_classes = [IsVerifiedVendor, IsAdmin]
 
     @action(detail=True, methods=['get'])
     def products(self, request, pk=None):
@@ -61,7 +60,11 @@ class CategoryViewSet(viewsets.ModelViewSet):
     def list(self, request):
         categories = Category.objects.all()
         serializer = CategorySerializer(categories, many=True)
-        return Response(serializer.data, status=status.HTTP_200_OK)
+        return Response({
+            "message": "Success",
+            "error": False,
+            "data":serializer.data
+        }, status=status.HTTP_200_OK)
 
 class ProductViewSet(viewsets.ModelViewSet):
     queryset = Product.objects.all()
