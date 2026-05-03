@@ -21,7 +21,12 @@ function App() {
   const [userData, setUserData] = useState(null);
   const [catData, setCatData] = React.useState([]);
   const [cat, setCat] = React.useState([]);
+  const [restaurants, setRestaurants] = useState([])
+  const [formFields, setFormsFields] = useState({
+      city:"Narnaul"
+  });
 
+    
 
   useEffect(() => {
     const handleResize = () => {
@@ -37,6 +42,7 @@ function App() {
 
   useEffect(() => {
     getCat();
+    getRestaurants();
     const token = localStorage.getItem("accessToken");
 
     if (token) {
@@ -65,6 +71,15 @@ function App() {
     });
   };
 
+  const getRestaurants = () => {
+    fetchDataFromApi(`/restaurants/${formFields.city}`).then((res) => {
+      if (res?.error !== false) {
+        alertBox("error", "Something went wrong");
+        return false;
+      }
+      setRestaurants(res?.data);
+    });  
+  }
 
   const getCat = () => {
     fetchDataFromApi("/restaurants/categories").then((res) => {
@@ -94,6 +109,9 @@ function App() {
     setCat,
     catData,
     setCatData,
+    restaurants,
+    formFields,
+    
   };
 
   return (

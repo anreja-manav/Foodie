@@ -316,9 +316,29 @@ class ProductViewSet(viewsets.ModelViewSet):
     #     return Response(serializer.data)
     
 
+    
+
 class RestaurantViewSet(viewsets.ModelViewSet):
     queryset = Restaurant.objects.all()
     serializer_class = RestaurantSerializer
+
+
+    @action(detail=True, methods=['get'])
+    def restaurants_list(self, request, city):
+        # import pdb; pdb.set_trace()
+        user_city = city
+        print(user_city)
+        restaurants = Restaurant.objects.filter(
+            city=user_city
+        )
+        serializer = RestaurantSerializer(restaurants, many=True)
+        return Response({
+            "message":"Successfully get Restaurants List",
+            "data":serializer.data,
+            "error": False
+        }, status=status.HTTP_200_OK)
+    
+
 
     @action(detail=False, methods=['post'], permission_classes=[IsVendor])
     def add_restaurant(self, request):

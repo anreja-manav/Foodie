@@ -49,11 +49,17 @@ const HomeCatSlider = () => {
                         return (
 
                         <SwiperSlide>
-                            <Link to={"/"}>
-                            <div className="item p-3 bg-white rounded-2xl text-center flex items-center justify-center flex-col m-0">
-                                <img src={`${imgUrl}${category.image}`} alt={category.name} className="w-30 h-30 py-2 transition-transform duration-500 transform-3d hover:rotate-y-12 hover:rotate-x-12 rounded-lg"/>
-                                <h3 className="text-xl">{category.name}</h3>
-                            </div>
+                            <Link to={"/"} className="no-underline">
+                                <div className="item flex flex-col items-center justify-center group cursor-pointer">
+                                    <div className="overflow-hidden w-32 h-32 mb-2">
+                                        <img 
+                                            src={`${imgUrl}${category.image}`} 
+                                            alt={category.name} 
+                                            className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
+                                        />
+                                    </div>
+                                    <h3 className="text-[18px] text-[#686b78] font-medium">{category.name}</h3>
+                                </div>
                             </Link>
                         </SwiperSlide>
 
