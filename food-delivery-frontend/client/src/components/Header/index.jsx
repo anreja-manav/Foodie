@@ -20,6 +20,8 @@ import MenuItem from '@mui/material/MenuItem';
 import Divider from '@mui/material/Divider';
 import { IoClose } from "react-icons/io5";
 import Search from "../Search";
+import { IoIosArrowDown } from "react-icons/io";
+
 
 const StyledBadge = styled(Badge)(({ theme }) => ({
   "& .MuiBadge-badge": {
@@ -57,14 +59,21 @@ const Header = () => {
 
   return (
     <>
-      <header className= "bg-[#1E2A56]! w-full!">
+      <header className= "bg-white w-full!">
           <div className=" header  flex flex-row items-center justify-between gap-4 lg:gap-3 border-5-white mb-3!">
             
 
-            <div className="col1 w-[30%] lg:w-[15%]">
+            <div className="col1 w-[30%] lg:w-[15%] relative group overflow-hidden">
+              <div className="absolute inset-0 bg-black/20 group-hover:bg-transparent transition-all"></div>
               <Link to={"/"}>
-                <img src={logo} alt="Logo" />
+                <img src={logo} alt="Logo" className="relative z-10" />
               </Link>
+            </div>
+
+            <div className="location flex justify-center items-center">
+              <h3 className="font-bold text-[18px] px-2">Other</h3>
+              <span className="font-bold text-gray-500">{context?.formFields.city}</span>
+              <IoIosArrowDown />
             </div>
 
             {context.windowWidth >= 992 && (
@@ -99,7 +108,7 @@ const Header = () => {
                 </div>
               </>
             )}
-            <div className="col3 w-[10%] lg:w-[30%] flex items-center pl-7 text-white!">
+            <div className="col3 w-[10%] lg:w-[30%] flex items-center pl-7 text-black!">
               <ul className="flex items-center justify-center gap-0 lg:gap-3 w-full">
                 {
                   context.isLogin === false && context.windowWidth > 992 ?
@@ -108,9 +117,9 @@ const Header = () => {
                         <Tooltip title="Login" placement="top">
                             <Link
                             to="/login"
-                            className="link transition text-[13px] sm:text-[15px] font-medium"
+                            className="link transition text-[13px] sm:text-[15px] font-bold"
                             >
-                                <IconButton aria-label="help">
+                                <IconButton aria-label="login">
                                     <StyledBadge
                                         color="secondary"
                                     >
@@ -202,7 +211,7 @@ const Header = () => {
                     <Tooltip title="Help" placement="top">
                       <Link
                         to="/help"
-                        className="link transition text-[13px] sm:text-[15px] font-medium"
+                        className="link transition text-[13px] sm:text-[15px] font-bold"
                       >
                         <IconButton aria-label="help">
                           <StyledBadge
@@ -222,7 +231,7 @@ const Header = () => {
                   <Tooltip title="Cart" placement="top">
                     <Link
                         to="/cart"
-                        className="link transition text-[13px] sm:text-[15px] font-medium"
+                        className="link transition text-[13px] sm:text-[15px] font-bold"
                       >
                         <IconButton aria-label="cart" onClick={() => context.toggleCartPanel(true)}>
                             <StyledBadge badgeContent={context?.cartData?.length !== 0 ? context?.cartData?.length : 0} color="secondary">

@@ -32,6 +32,7 @@ add_restaurant = RestaurantViewSet.as_view({'post': 'add_restaurant'}, permissio
 update_restaurant = RestaurantViewSet.as_view({'patch': 'update_restaurant'}, permission_classes=[IsVendor])
 get_restaurant = RestaurantViewSet.as_view({'get': 'get_restaurant'}, permission_classes=[IsVendor])
 my_menu = RestaurantViewSet.as_view({'get': 'my_menu'}, permission_classes=[IsVerifiedVendor])
+restaurants_list = RestaurantViewSet.as_view({'get': 'restaurants_list'})
 
 
 urlpatterns = [
@@ -64,5 +65,6 @@ urlpatterns = [
     path('update/<int:pk>/', update_restaurant, name='update_restaurant'),
     path('', get_restaurant, name='get_restaurant'),
     path('my_menu', my_menu, name='my_menu'),
+    path('<str:city>', restaurants_list, name = 'restaurants_list'),
 ]
 
