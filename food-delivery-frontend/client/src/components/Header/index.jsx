@@ -70,10 +70,12 @@ const Header = () => {
               </Link>
             </div>
 
-            <div className="location flex justify-center items-center">
-              <h3 className="font-bold text-[18px] px-2">Other</h3>
-              <span className="font-bold text-gray-500">{context?.formFields.city}</span>
-              <IoIosArrowDown />
+            <div className="location flex justify-center items-center ">
+              <IconButton aria-label="location" className="hover:text-orange-600! text-black! font-bold! text-[18px]!  px-2 " onClick={() => context.toggleLocationPanel(true)}>
+             <h3 className="underline! ">Other</h3> <span className=" pl-3 text-[16px]! no-underline! text-gray-700 hover:text-gray-400">{context?.formFields.city}</span>
+              
+              <IoIosArrowDown className="text-[16px]! text-orange-600!" />
+              </IconButton>
             </div>
 
             {context.windowWidth >= 992 && (
