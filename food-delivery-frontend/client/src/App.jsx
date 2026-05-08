@@ -15,19 +15,41 @@ export const MyContext = React.createContext();
 
 function App() {
 
-
+  // States
   const [isLogin, setIsLogin] = useState(false);
-  const [windowWidth, setWindowWidth] = React.useState(window.innerWidth);
+  const [windowWidth, setWindowWidth] = useState(window.innerWidth);
   const [userData, setUserData] = useState(null);
   const [catData, setCatData] = React.useState([]);
   const [cat, setCat] = React.useState([]);
-  const [restaurants, setRestaurants] = useState([])
-  const [formFields, setFormsFields] = useState({
-      city:"Narnaul"
+  const [restaurants, setRestaurants] = useState([]);
+  const [formFields, setFormFields] = useState({
+    city: "Narnaul"
   });
 
-    
+  const [openLocationPanel, setOpenLocationPanel] = useState(false);
 
+  const toggleLocationPanel = (newOpen) => {
+    setOpenLocationPanel(newOpen);
+  };
+
+  
+  // UseEffect to get default address city
+  useEffect(() => {
+    const defaultCity = userData?.Addresses?.find(addr => addr.is_default === true)?.city;
+    if (defaultCity) {
+        setFormFields(prev => ({ ...prev, city: defaultCity }));
+    }
+  }, [userData]);
+
+  // useEffect to hit restaurant api after changing the city
+  useEffect(() => {
+    const delayDebounceFn = setTimeout(() => {
+        getRestaurants();
+    }, 1000);
+    return () => clearTimeout(delayDebounceFn);
+  }, [formFields.city]);
+  
+  // UseEffect to handle responsive window
   useEffect(() => {
     const handleResize = () => {
       setWindowWidth(window.innerWidth);
@@ -38,8 +60,9 @@ function App() {
     return () => {
       window.removeEventListener("resize", handleResize);
     };
-  });
+  }, []);
 
+  // useEffect to see if user login or not
   useEffect(() => {
     getCat();
     getRestaurants();
@@ -55,6 +78,7 @@ function App() {
   }, [isLogin]);
 
 
+  // UseEffect to get user's detail
   const getUserDetails = () => {
     fetchDataFromApi(`accounts/customer/profile`).then((res) => {
       setUserData(res);
@@ -71,6 +95,7 @@ function App() {
     });
   };
 
+  // Get Restaurants Function
   const getRestaurants = () => {
     fetchDataFromApi(`/restaurants/${formFields.city}`).then((res) => {
       if (res?.error !== false) {
@@ -81,6 +106,7 @@ function App() {
     });  
   }
 
+  // Function: Get Category
   const getCat = () => {
     fetchDataFromApi("/restaurants/categories").then((res) => {
       if (res?.error !== false) {
@@ -92,11 +118,13 @@ function App() {
   }
 
 
+  // Alertbox
   const alertBox = (type, msg) => {
     if (type === "success") toast.success(msg);
     if (type === "error") toast.error(msg);
   };
 
+  // Values to pass in MyContext
   const values = {
     alertBox,
     isLogin,
@@ -111,7 +139,11 @@ function App() {
     setCatData,
     restaurants,
     formFields,
-    
+    setFormFields,
+    openLocationPanel,
+    setOpenLocationPanel,
+    toggleLocationPanel,
+    windowWidth,
   };
 
   return (
