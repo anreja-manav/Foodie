@@ -1,10 +1,11 @@
 import React from "react";
 import { MyContext } from "../../App";
 import HomeCatSlider from "../../components/HomeCatSlider";
-import Restaurants from "../../components/Restaurants";
+import RestaurantsSlider from "../../components/RestaurantsSlider";
 import LocationPanel from "../../components/LocationPanel";
 import Drawer from "@mui/material/Drawer";
 import { IoCloseSharp } from "react-icons/io5";
+import RestaurantsList from "../../components/RestaurantsList";
 
 
 
@@ -38,7 +39,8 @@ const Home = () => {
 
             <hr className="m-6"></hr>
 
-            <Restaurants />
+            <RestaurantsSlider />
+            <RestaurantsList />
             
         </>
     )
