@@ -11,16 +11,16 @@ import { Navigation, FreeMode } from 'swiper/modules';
 
 
 
-const Restaurants = () => {
+const RestaurantsSlider = () => {
     const imgUrl = import.meta.env.VITE_API_URL;
     const context = useContext(MyContext);
     
     
 
   return (
-    <section className='restaurantsSlider py-5'>
-      <div className='container'>
-        {context?.restaurants?.length !== 0 ? (
+    <section className='restaurantsSlider py-5 hidden sm:block'>
+      <div className='container px-6'>
+        {context?.restaurants?.length !== 0 && 
           <>
             <h2 className="font-bold text-[23px] text-black mt-1 pl-3 py-3 pb-8">
               Top restaurant chains in {context?.formFields.city}
@@ -35,7 +35,7 @@ const Restaurants = () => {
               breakpoints={{
                 250: { slidesPerView: 1, spaceBetween: 10 },
                 330: { slidesPerView: 2, spaceBetween: 10 },
-                500: { slidesPerView: 2, spaceBetween: 10 },
+                560: { slidesPerView: 2.4, spaceBetween: 10 },
                 1100: { slidesPerView: 3.1, spaceBetween: 10 },
               }}
               className="mySwiper"
@@ -60,27 +60,20 @@ const Restaurants = () => {
 
                     
 
-                    </div>
+                  </div>
                 </SwiperSlide>
               ))}
             </Swiper>
+
+            <hr className="my-6! border-gray-400"></hr>
           </>
-        ) : (
-          <div className='flex flex-col items-center justify-center'>
-            <img src="EmptyRestaurant.png" className='w-100' alt="Empty" />
-            <h2 className='text-center font-bold text-black lg:text-[25px] md:text-[20px]'>
-                No restaurants available in your city yet.
-            </h2>
-            <p className='text-center font-xl text-gray-600 lg:text-[20px] md:text-[18px] sm:text-[10px]'>
-                We're working on adding amazing restaurants to your area. Please check back soon!
-            </p>
-          </div>
-        )}
+        }
       </div>
+      
     </section>
   );
     
 
 }
 
-export default Restaurants
+export default RestaurantsSlider
