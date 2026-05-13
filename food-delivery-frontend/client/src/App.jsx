@@ -9,6 +9,7 @@ import ForgotPassword from './pages/reset_password';
 import Header from './components/Header';
 import { fetchDataFromApi } from './utils/api';
 import Home from './pages/Home';
+import Footer from './components/Footer';
 
 export const MyContext = React.createContext();
 
@@ -158,6 +159,7 @@ function App() {
             <Route path='/login' element={<Login />} />
             <Route path='/forgot_password/confirm' element={<ForgotPassword />} />
           </Routes>
+          <Footer />
         </MyContext.Provider>
         <ToastContainer />
       </BrowserRouter>
