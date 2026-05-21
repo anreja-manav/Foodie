@@ -6,6 +6,8 @@ from apps.restaurants.models import Category, Product, Restaurant
 
 class ProductSerializer(serializers.ModelSerializer):
     restaurant = serializers.ReadOnlyField(source='restaurant.restaurant_name')
+    restaurant_id = serializers.ReadOnlyField(source='restaurant.id')
+    restaurant_rating = serializers.ReadOnlyField(source='restaurant.rating')
     food_type_display = serializers.CharField(source='get_food_type_display', read_only=True)
     
     # Custom field to calculate savings percentage on the fly
@@ -16,7 +18,8 @@ class ProductSerializer(serializers.ModelSerializer):
         fields = [
             'id', 'name', 'description', 'price', 'old_price', 
             'savings_percentage', 'food_type', 'food_type_display', 
-            'rating', 'image', 'is_available', 'is_bestseller', 'restaurant' 
+            'rating', 'image', 'is_available', 'is_bestseller', 'preparation_time',
+            'restaurant', 'restaurant_id', 'restaurant_rating'
         ]
 
     def get_savings_percentage(self, obj):
@@ -61,6 +64,7 @@ class RestaurantSerializer(serializers.ModelSerializer):
             'Account_number',
             'fassai_certificate',
             'opening_time',
-            'closing_time'
+            'closing_time',
+            'rating'
 
         ]

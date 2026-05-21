@@ -21,6 +21,7 @@ class Restaurant(models.Model):
     contact_number = models.CharField(max_length = 10)
     restaurant_description = models.TextField(null=True, blank=True)
     GST_number = models.CharField(max_length=100)
+    rating = models.DecimalField(max_digits=3, decimal_places=2, default=0.0)
 
     Account_number = models.CharField(max_length=100, null=True, blank=True)
     fassai_certificate = models.ImageField(upload_to='restaurants/certificate/', null=True, blank=True)

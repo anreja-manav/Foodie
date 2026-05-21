@@ -7,10 +7,13 @@ import { BiSupport } from "react-icons/bi";
 import { Form, Link } from 'react-router-dom';
 import { IoChatboxOutline } from "react-icons/io5";
 import { IoCloseSharp } from "react-icons/io5";
+import Drawer from "@mui/material/Drawer";
 import Button from '@mui/material/Button';
 import { MyContext } from '../../App';
 import FormControlLabel from '@mui/material/FormControlLabel';
 import Checkbox from '@mui/material/Checkbox';
+import LocationPanel from "../../components/LocationPanel";
+
 
 const Footer = () => {
   const context = React.useContext(MyContext);
@@ -109,6 +112,26 @@ const Footer = () => {
           </div>
         </div>
       </div>
+
+      <Drawer
+          open={context.openLocationPanel}
+          onClose={() => context.toggleLocationPanel(false)}
+          anchor="left"
+          sx={{
+              '& .MuiDrawer-paper': {
+                  width: '400px',
+                  boxSizing: 'border-box',
+              },
+          }}
+      >
+          <div className="flex items-center justify-between py-4 px-4 border-b border-[rgba(0,0,0,0.1)]">
+              <IoCloseSharp className="text-[24px] cursor-pointer" onClick={() => context.toggleLocationPanel(false)} />
+              
+          </div>
+          
+              <LocationPanel/>
+          
+      </Drawer>
     </footer>
   );
 }
