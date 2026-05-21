@@ -21,7 +21,7 @@ update_category = ProductViewSet.as_view({'patch': 'update_category'}, permissio
 update_name = ProductViewSet.as_view({'patch': 'update_name'}, permission_classes = [IsVerifiedVendor])
 update_image = ProductViewSet.as_view({'patch': 'update_image'}, permission_classes = [IsVerifiedVendor])
 bestseller = ProductViewSet.as_view({'get': 'bestsellers'})
-search_products = ProductViewSet.as_view({'get': 'search'})
+search = ProductViewSet.as_view({'get': 'search'})
 products_by_category = ProductViewSet.as_view({'get': 'by_category'})
 products_by_food_type = ProductViewSet.as_view({'get': 'by_food_type'})
 availble_products = ProductViewSet.as_view({'get': 'available'})
@@ -56,7 +56,7 @@ urlpatterns = [
     path('products/update/name', update_name, name='update_name'),
     path('products/update/image', update_image, name='update_image'),
     path('products/bestseller', bestseller, name='bestseller'),
-    path('products/search', search_products, name='search_products'),
+    path('search', search, name='search'),
     path('products/available', availble_products, name='available_products'),
     path('<int:pk>/get_products', products_by_restaurant, name='products_by_restaurant'),
     # path('<int:pk>/categories',  menu_by_category, name='menu_by_category'),

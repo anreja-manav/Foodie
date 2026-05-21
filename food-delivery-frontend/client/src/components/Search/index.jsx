@@ -1,4 +1,4 @@
-import React, { useState, useContext } from "react";
+import React, { useState, useContext, useEffect } from "react";
 import "../Search/style.css";
 import Button from "@mui/material/Button";
 import { BsSearchHeart } from "react-icons/bs";
@@ -13,36 +13,47 @@ const Search = () => {
   const context = useContext(MyContext);
   const navigate = useNavigate();
 
+  useEffect(() => {
+    if (!searchQuery.trim() || searchQuery.length <= 2) {
+      return;
+    }
+
+    const delayDebounceFn = setTimeout(async () => {
+      setIsLoading(true);
+      try {
+        const res = await fetchDataFromApi(
+          `/restaurants/search?query=${searchQuery}&city=${context.formFields.city}&page=1&limit=5`
+        );
+        context.setSearchData(res || []);
+        navigate(`/search?q=${encodeURIComponent(searchQuery)}`);
+      } catch (error) {
+        console.error("Search error:", error);
+      } finally {
+        setIsLoading(false);
+      }
+    }, 500);
+
+    return () => clearTimeout(delayDebounceFn);
+  }, [searchQuery, context.formFields.city]);
+
   const handleSearch = async () => {
     if (!searchQuery.trim()) return;
 
     setIsLoading(true);
-
-    const res = await fetchDataFromApi(
-      `/api/product/search?q=${searchQuery}&page=1&limit=10`
-    );
-
-    context.setSearchData(res?.products || []);
-    context.setOpenSearchPanel(false);
-
-    setIsLoading(false);
-    navigate(`/search?q=${searchQuery}`);
+    if (searchQuery.length > 2) {
+      const res = await fetchDataFromApi(
+        `/restaurants/search?query=${searchQuery}&city=${context.formFields.city}&page=1&limit=10`
+      );
+      console.log(res);
+      context.setSearchData(res || []);
+      context.setOpenSearchPanel(false);
+      setIsLoading(false);
+      navigate(`/search?q=${encodeURIComponent(searchQuery)}`);
+    }
   };
 
-  const onChangeInput = async (e) => {
-    const value = e.target.value;
-    setSearchQuery(value);
-
-    if (!value.trim()) {
-      context.setSearchData([]);
-      return;
-    }
-
-    const res = await fetchDataFromApi(
-      `/api/product/search?q=${value}&page=1&limit=5`
-    );
-
-    context.setSearchData(res?.products || []);
+  const onChangeInput = (e) => {
+    setSearchQuery(e.target.value);
   };
 
   return (
@@ -54,7 +65,7 @@ const Search = () => {
           type="text"
           value={searchQuery}
           onChange={onChangeInput}
-          placeholder="Search for products..."
+          placeholder="Search for Restaurants and Food"
           className="w-full h-full bg-inherit p-2 text-sm sm:text-base focus:outline-none"
         />
 

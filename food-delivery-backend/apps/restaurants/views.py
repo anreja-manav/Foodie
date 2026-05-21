@@ -260,23 +260,23 @@ class ProductViewSet(viewsets.ModelViewSet):
     @action(detail=False, methods=['get'])
     def search(self, request):
 
-        user_city = get_city(request.user)
         query = request.query_params.get('query')
+        user_city = request.query_params.get('city')
 
         if not query:
             return Response({'message': 'query parameter is required'}, status=status.HTTP_400_BAD_REQUEST)
 
         # 1. Search Products
         products = Product.objects.filter(
-            Q(name__icontains=query) | Q(description__icontains=query),
+            Q(name__icontains=query) | Q(description__icontains=query) &
+            Q(restaurant__city__iexact=user_city),
             is_available=True,
-            restaurant__city__iexact=user_city
         ).select_related('restaurant')
 
         # 2. Search Restaurants
         restaurants = Restaurant.objects.filter(
-            Q(restaurant_name__icontains=query) | Q(restaurant_description__icontains=query),
-            city__iexact=user_city,
+            (Q(restaurant_name__icontains=query) | Q(restaurant_description__icontains=query)) &
+            Q(city__iexact=user_city),
             is_open=True
         )
 

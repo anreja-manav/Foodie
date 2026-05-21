@@ -10,6 +10,7 @@ import Header from './components/Header';
 import { fetchDataFromApi } from './utils/api';
 import Home from './pages/Home';
 import Footer from './components/Footer';
+import SearchPage from './pages/SearchPage';
 
 export const MyContext = React.createContext();
 
@@ -28,6 +29,9 @@ function App() {
   });
 
   const [openLocationPanel, setOpenLocationPanel] = useState(false);
+  const [searchData, setSearchData] = useState([]);
+  const [openSearchPanel, setOpenSearchPanel] = useState(false);
+
 
   const toggleLocationPanel = (newOpen) => {
     setOpenLocationPanel(newOpen);
@@ -145,6 +149,10 @@ function App() {
     setOpenLocationPanel,
     toggleLocationPanel,
     windowWidth,
+    searchData,
+    setSearchData,
+    setOpenSearchPanel,
+    openSearchPanel,
   };
 
   return (
@@ -158,6 +166,7 @@ function App() {
             <Route path='/verify' element={<Verify />} />
             <Route path='/login' element={<Login />} />
             <Route path='/forgot_password/confirm' element={<ForgotPassword />} />
+            <Route path="/search" element={<SearchPage />} />
           </Routes>
           <Footer />
         </MyContext.Provider>
