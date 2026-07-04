@@ -28,6 +28,7 @@ availble_products = ProductViewSet.as_view({'get': 'available'})
 products_by_restaurant = ProductViewSet.as_view({'get': 'get_products'})
 # menu_by_category = ProductViewSet.as_view({'get': 'menu_by_category'})
 
+restaurant_detail = RestaurantViewSet.as_view({'get': 'retrieve'})
 add_restaurant = RestaurantViewSet.as_view({'post': 'add_restaurant'}, permission_classes=[IsVendor])
 update_restaurant = RestaurantViewSet.as_view({'patch': 'update_restaurant'}, permission_classes=[IsVendor])
 get_restaurant = RestaurantViewSet.as_view({'get': 'get_restaurant'}, permission_classes=[IsVendor])
@@ -61,6 +62,7 @@ urlpatterns = [
     path('<int:pk>/get_products', products_by_restaurant, name='products_by_restaurant'),
     # path('<int:pk>/categories',  menu_by_category, name='menu_by_category'),
 
+    path('<int:pk>/', restaurant_detail, name='restaurant_detail'),
     path('add', add_restaurant, name='add_restaurant'),
     path('update/<int:pk>/', update_restaurant, name='update_restaurant'),
     path('', get_restaurant, name='get_restaurant'),

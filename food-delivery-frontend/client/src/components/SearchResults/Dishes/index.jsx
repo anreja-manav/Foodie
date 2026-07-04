@@ -3,6 +3,7 @@ import { MyContext } from '../../../App';
 import { IoIosStar } from "react-icons/io";
 import { MdKeyboardArrowRight } from "react-icons/md";
 import { FaArrowRight } from "react-icons/fa6";
+import { Link } from 'react-router-dom';
 
 
 
@@ -30,6 +31,7 @@ const DishesResult = () => {
           </div>
 
           {/* Cards Grid Wrapper */}
+          
           <div className="grid grid-cols-1 md:grid-cols-2 gap-8 pb-12">
             {products.map((dish) => (
               <div 
@@ -37,6 +39,7 @@ const DishesResult = () => {
                 className="bg-white rounded-3xl p-5 shadow-sm border border-gray-100 w-full flex flex-col gap-4 font-sans"
               >
                 {/* 1. RESTAURANT HEADER */}
+                <Link to={`/restaurants/${dish.restaurant_id}`}>
                 <div className="flex justify-between items-start">
                   <div className="flex flex-col gap-1">
                     <span className="text-gray-900 font-bold text-sm tracking-wide">
@@ -64,6 +67,7 @@ const DishesResult = () => {
                     <FaArrowRight className="w-5 h-5 stroke-[1.5]" />
                   </button>
                 </div>
+                </Link>
 
                 {/* DIVIDER */}
                 <hr className="border-t border-dashed border-gray-200 -mx-5" />
