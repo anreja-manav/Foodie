@@ -11,6 +11,9 @@ import { fetchDataFromApi } from './utils/api';
 import Home from './pages/Home';
 import Footer from './components/Footer';
 import SearchPage from './pages/SearchPage';
+import RestaurantDetail from './pages/RestaurantDetails';
+import Breadcrumbs from './components/Breadcrumbs';
+import RestaurantsList from './components/RestaurantsList';
 
 export const MyContext = React.createContext();
 
@@ -160,6 +163,8 @@ function App() {
       <BrowserRouter>
         <MyContext.Provider value={values}>
           <Header />
+          <main className="w-[95%] md:w-[85%] lg:w-[70%] mx-auto!">
+          <Breadcrumbs />
           <Routes>
             <Route path='/' element={<Home />} />
             <Route path="/register" element={<Register />} />
@@ -167,7 +172,10 @@ function App() {
             <Route path='/login' element={<Login />} />
             <Route path='/forgot_password/confirm' element={<ForgotPassword />} />
             <Route path="/search" element={<SearchPage />} />
+            <Route path="/restaurants/:id" element={<RestaurantDetail />} />
+            <Route path="/restaurants" element={<RestaurantsList />} />
           </Routes>
+          </main>
           <Footer />
         </MyContext.Provider>
         <ToastContainer />

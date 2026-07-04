@@ -30,8 +30,7 @@ class ProductSerializer(serializers.ModelSerializer):
 
 
 class CategorySerializer(serializers.ModelSerializer):
-    products = ProductSerializer(many=True, read_only=True)
-
+    products = serializers.SerializerMethodField()
     class Meta:
         model = Category
         fields = ['id', 'name', 'products', 'image']
@@ -43,7 +42,7 @@ class CategorySerializer(serializers.ModelSerializer):
         else:
             products = obj.products.all()
             
-        return ProductSerializer(products, many=True).data
+        return ProductSerializer(products, many=True, context=self.context).data
 
 
 
@@ -51,20 +50,25 @@ class RestaurantSerializer(serializers.ModelSerializer):
     class Meta:
         model = Restaurant
         fields = [
-            'id',
-            'restaurant_name',
-            'resturant_pic',
-            'restaurant_address', 
-            'city',
-            'pincode',
-            'is_open',
-            'contact_number',
-            'restaurant_description',
-            'GST_number',
-            'Account_number',
-            'fassai_certificate',
-            'opening_time',
-            'closing_time',
-            'rating'
-
+            'id', 'restaurant_name', 'resturant_pic', 'restaurant_address', 
+            'city', 'pincode', 'is_open', 'contact_number', 'restaurant_description',
+            'GST_number', 'Account_number', 'fassai_certificate', 'opening_time',
+            'closing_time', 'rating'
         ]
+
+class RestaurantDetailSerializer(serializers.ModelSerializer):
+    categories = serializers.SerializerMethodField()
+
+    class Meta:
+        model = Restaurant
+        fields = [
+            'id', 'restaurant_name', 'resturant_pic', 'restaurant_address', 
+            'city', 'pincode', 'is_open', 'contact_number', 'restaurant_description',
+            'GST_number', 'Account_number', 'fassai_certificate', 'opening_time',
+            'closing_time', 'rating', 'categories'
+        ]
+
+    # FIXED: Moved out of the Meta class scope hierarchy
+    def get_categories(self, obj):
+        categories = Category.objects.filter(products__restaurant=obj).distinct()
+        return CategorySerializer(categories, many=True, context={'restaurant': obj}).data

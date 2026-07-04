@@ -7,7 +7,7 @@ from django.db.models import Q
 
 from apps.restaurants.models import Category, Product, Restaurant
 from apps.accounts.models import VendorProfile
-from apps.restaurants.serializers import CategorySerializer, ProductSerializer, RestaurantSerializer
+from apps.restaurants.serializers import CategorySerializer, ProductSerializer, RestaurantSerializer, RestaurantDetailSerializer
 from .utils import get_city
 
 # Create your views here.
@@ -322,10 +322,20 @@ class RestaurantViewSet(viewsets.ModelViewSet):
     queryset = Restaurant.objects.all()
     serializer_class = RestaurantSerializer
 
+    def get_serializer_class(self):
+        if self.action == 'retrieve':
+            return RestaurantDetailSerializer
+        return super().get_serializer_class()
+    
+    
+    def get_queryset(self):
+        if self.action == 'retrieve':
+            return Restaurant.objects.prefetch_related('menu__category')
+        return super().get_queryset()
+    
 
     @action(detail=True, methods=['get'])
     def restaurants_list(self, request, city):
-        # import pdb; pdb.set_trace()
         user_city = city
         print(user_city)
         restaurants = Restaurant.objects.filter(
