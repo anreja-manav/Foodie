@@ -106,7 +106,10 @@ const DishesResult = () => {
                     </div>
 
                     {/* More Details Button */}
-                    <button className="flex items-center gap-1 border border-gray-300 rounded-full px-3 py-1 text-xs text-gray-600 font-semibold w-max mt-4 hover:bg-gray-50 transition-colors">
+                    <button 
+                      className="flex items-center gap-1 border border-gray-300 rounded-full px-3 py-1 text-xs text-gray-600 font-semibold w-max mt-4 hover:bg-gray-50 transition-colors"
+                      onClick={() => context.handleOpenDishDetailsModal(true, dish)}
+                    >
                       More Details
                       <span className="text-[16px]"><MdKeyboardArrowRight /></span>
                     </button>

@@ -14,6 +14,7 @@ import SearchPage from './pages/SearchPage';
 import RestaurantDetail from './pages/RestaurantDetails';
 import Breadcrumbs from './components/Breadcrumbs';
 import RestaurantsList from './components/RestaurantsList';
+import DishDetailsDialog from './components/ItemDetailDialog';
 
 export const MyContext = React.createContext();
 
@@ -34,10 +35,28 @@ function App() {
   const [openLocationPanel, setOpenLocationPanel] = useState(false);
   const [searchData, setSearchData] = useState([]);
   const [openSearchPanel, setOpenSearchPanel] = useState(false);
+  const [openDishDetailsModal, setOpenDishDetailsModal] = React.useState({
+    open: false,
+    item: {}
+  });
 
 
   const toggleLocationPanel = (newOpen) => {
     setOpenLocationPanel(newOpen);
+  };
+
+  const handleOpenDishDetailsModal = (status, item) => {
+    setOpenDishDetailsModal({
+      open: status,
+      item: item
+    });
+  };
+
+  const handleCloseDishDetailsModal = () => {
+    setOpenDishDetailsModal({
+      open: false,
+      item: {}
+    });
   };
 
   
@@ -156,6 +175,10 @@ function App() {
     setSearchData,
     setOpenSearchPanel,
     openSearchPanel,
+    openDishDetailsModal,
+    setOpenDishDetailsModal,
+    handleCloseDishDetailsModal,
+    handleOpenDishDetailsModal,
   };
 
   return (
@@ -163,7 +186,7 @@ function App() {
       <BrowserRouter>
         <MyContext.Provider value={values}>
           <Header />
-          <main className="w-[95%] md:w-[85%] lg:w-[70%] mx-auto!">
+          <main >
           <Breadcrumbs />
           <Routes>
             <Route path='/' element={<Home />} />
@@ -177,6 +200,7 @@ function App() {
           </Routes>
           </main>
           <Footer />
+          <DishDetailsDialog />
         </MyContext.Provider>
         <ToastContainer />
       </BrowserRouter>
