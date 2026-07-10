@@ -15,6 +15,7 @@ const RestaurantDetail = () => {
   const { id } = useParams();
   const [restaurantDetails, setRestaurantDetails] = useState([]);
   const [openCategories, setOpenCategories] = useState({});
+  const [openItemDetails, setOpenItemDetails] = useState()
   const context = useContext(MyContext);
   const imgUrl = import.meta.env.VITE_API_URL;
 
@@ -38,7 +39,7 @@ const RestaurantDetail = () => {
   };
     
   return (
-    <div className='py-5 px-2 w-full bg-white '>
+    <div className='py-5 px-2  bg-white w-[95%] md:w-[85%] lg:w-[70%] mx-auto!'>
       <span className='text-black font-[850] text-[27px] '>{restaurantDetails?.restaurant_name}</span>
 
 
@@ -155,7 +156,7 @@ const RestaurantDetail = () => {
                   {/* Collapsible items list */}
                   <div
                     className={`overflow-hidden transition-all duration-300 ease-in-out ${
-                      isOpen ? "max-h-[2000px] opacity-100" : "max-h-0 opacity-0"
+                      isOpen ? "max-h-500 opacity-100" : "max-h-0 opacity-0"
                     }`}
                   >
                     <div className="px-4 pb-4 space-y-4">
@@ -177,8 +178,15 @@ const RestaurantDetail = () => {
                                 {item.name}
                               </div>
                               {item.price != null && (
-                                <div className="text-gray-600 text-sm mt-1">
-                                  ₹{item.price}
+                                <div className="flex items-center gap-2 mt-0.5">
+                                  {item.old_price && (
+                                    <span className="text-gray-400 line-through text-sm font-medium">
+                                      ₹{item.old_price}
+                                    </span>
+                                  )}
+                                  <span className="bg-indigo-600 text-white font-bold text-xs px-2 py-0.5 rounded">
+                                    ₹{item.price}
+                                  </span>
                                 </div>
                               )}
                               {item.description && (
@@ -187,14 +195,22 @@ const RestaurantDetail = () => {
                                 </div>
                               )}
                             </div>
-
-                            {item.image && (
-                              <img
-                                src={`${imgUrl}${item.image}`}
-                                alt={item.name}
-                                className="w-30 h-30 rounded-lg object-cover shrink-0"
-                              />
-                            )}
+                            <div className="relative self-center ">
+                              {item.image && (
+                                <img
+                                  src={`${imgUrl}${item.image}`}
+                                  alt={item.name}
+                                  className="w-30 h-30 rounded-lg object-cover shrink-0 cursor-pointer"
+                                  onClick={() => context.handleOpenDishDetailsModal(true, item)}
+                                />
+                              )}
+                              <div className="absolute -bottom-3 left-1/2 -translate-x-1/2 w-24 shadow-md bg-white rounded-xl border border-gray-200 text-center flex flex-col overflow-hidden">
+                                <button className="text-emerald-600 font-extrabold text-sm py-1.5 hover:bg-emerald-50 transition-colors tracking-wide">
+                                  ADD
+                                </button>
+                                
+                              </div>
+                            </div>
                           </div>
                         ))
                       ) : (
