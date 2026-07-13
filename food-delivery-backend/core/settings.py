@@ -50,6 +50,7 @@ INSTALLED_APPS = [
     'apps.accounts',
     'apps.restaurants',
     'apps.orders',
+    'apps.cart',
     'rest_framework_simplejwt',
 ]
 
