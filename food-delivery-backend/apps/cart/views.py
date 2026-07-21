@@ -25,13 +25,13 @@ class CartViewSet(viewsets.ModelViewSet):
         cart, _ = Cart.objects.get_or_create(user=customer)
         serializer = self.get_serializer(cart)
 
-        return Response(serializer.data)
+        return Response({"error": False, "data":serializer.data})
 
     @action(detail=False, methods=['post'])
     def add_item(self, request):
         customer = request.user.customer_profile
 
-        product_id = request.data.get("product")
+        product_id = request.data.get("product_id")
         quantity = int(request.data.get("quantity", 1))
 
         cart, _ = Cart.objects.get_or_create(user=customer)
@@ -47,7 +47,7 @@ class CartViewSet(viewsets.ModelViewSet):
             item.save()
 
         return Response(
-            {"message": "Item added to cart"},
+            {"error": False, "message": "Item added to cart"},
             status=status.HTTP_200_OK
         )
 
@@ -57,7 +57,6 @@ class CartViewSet(viewsets.ModelViewSet):
 
         product_id = request.data.get("product")
         quantity = int(request.data.get("quantity"))
-
         cart = Cart.objects.get(user=customer)
 
         try:
@@ -67,7 +66,7 @@ class CartViewSet(viewsets.ModelViewSet):
             )
         except CartItems.DoesNotExist:
             return Response(
-                {"error": "Item not found"},
+                {"error": True, "message": "Item not found"},
                 status=status.HTTP_404_NOT_FOUND
             )
 
@@ -77,28 +76,18 @@ class CartViewSet(viewsets.ModelViewSet):
             item.quantity = quantity
             item.save()
 
-        return Response({"message": "Cart updated"})
+        return Response({"error": False,"message": "Cart updated"})
 
-    @action(detail=False, methods=['delete'])
-    def remove_item(self, request):
+    @action(detail=True, methods=['delete'])
+    def remove_item(self, request, id):
+        if id == None:
+            return Response({"error": True, "message": "Dish can not be empty"})
         customer = request.user.customer_profile
-
-        product_id = request.data.get("product")
-
         cart = Cart.objects.get(user=customer)
 
         CartItems.objects.filter(
             cart=cart,
-            product_id=product_id
+            product_id=id
         ).delete()
 
-        return Response({"message": "Item removed"})
-
-    @action(detail=False, methods=['delete'])
-    def clear_cart(self, request):
-        customer = request.user.customer_profile
-
-        cart = Cart.objects.get(user=customer)
-        cart.items.all().delete()
-
-        return Response({"message": "Cart cleared"})
+        return Response({"error": False, "message": "Item removed"})

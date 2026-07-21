@@ -5,6 +5,7 @@ from apps.restaurants.models import Category, Product, Restaurant
 
 
 class ProductSerializer(serializers.ModelSerializer):
+    image = serializers.SerializerMethodField()
     restaurant = serializers.ReadOnlyField(source='restaurant.restaurant_name')
     restaurant_id = serializers.ReadOnlyField(source='restaurant.id')
     restaurant_rating = serializers.ReadOnlyField(source='restaurant.rating')
@@ -22,6 +23,9 @@ class ProductSerializer(serializers.ModelSerializer):
             'restaurant', 'restaurant_id', 'restaurant_rating'
         ]
 
+    def get_image(self, obj):
+        return obj.image.url if obj.image else None
+    
     def get_savings_percentage(self, obj):
         if obj.old_price and obj.old_price > obj.price:
             savings = ((obj.old_price - obj.price) / obj.old_price) * 100

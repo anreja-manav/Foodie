@@ -6,6 +6,9 @@ import { FaStar } from "react-icons/fa";
 import { MdOutlineRestaurantMenu } from "react-icons/md";
 import { IoIosSearch } from "react-icons/io";
 import { IoIosArrowDown } from "react-icons/io";
+import { Button } from '@mui/material';
+import QtyBox from '../../components/QtyBox';
+import DishItem from '../../components/DishItem';
 
 
 
@@ -15,7 +18,7 @@ const RestaurantDetail = () => {
   const { id } = useParams();
   const [restaurantDetails, setRestaurantDetails] = useState([]);
   const [openCategories, setOpenCategories] = useState({});
-  const [openItemDetails, setOpenItemDetails] = useState()
+  const [openItemDetails, setOpenItemDetails] = useState();
   const context = useContext(MyContext);
   const imgUrl = import.meta.env.VITE_API_URL;
 
@@ -37,6 +40,7 @@ const RestaurantDetail = () => {
       [key]: !prev[key],
     }));
   };
+
     
   return (
     <div className='py-5 px-2  bg-white w-[95%] md:w-[85%] lg:w-[70%] mx-auto!'>
@@ -166,51 +170,7 @@ const RestaurantDetail = () => {
                             key={item.id ?? itemIndex}
                             className="flex items-center justify-between gap-4"
                           >
-                            <div className={`w-4 h-4 border-2 rounded flex items-center justify-center ${
-                              item.food_type === 'VEG' ? 'border-green-600' : 'border-red-600'
-                            }`}>
-                              <div className={`w-1.5 h-1.5 rounded-full ${
-                                item.food_type === 'VEG' ? 'bg-green-600' : 'bg-red-600'
-                              }`} />
-                            </div>
-                            <div className="flex-1">
-                              <div className="font-semibold text-[15px] text-black">
-                                {item.name}
-                              </div>
-                              {item.price != null && (
-                                <div className="flex items-center gap-2 mt-0.5">
-                                  {item.old_price && (
-                                    <span className="text-gray-400 line-through text-sm font-medium">
-                                      ₹{item.old_price}
-                                    </span>
-                                  )}
-                                  <span className="bg-indigo-600 text-white font-bold text-xs px-2 py-0.5 rounded">
-                                    ₹{item.price}
-                                  </span>
-                                </div>
-                              )}
-                              {item.description && (
-                                <div className="text-gray-400 text-xs mt-1 line-clamp-2">
-                                  {item.description}
-                                </div>
-                              )}
-                            </div>
-                            <div className="relative self-center ">
-                              {item.image && (
-                                <img
-                                  src={`${imgUrl}${item.image}`}
-                                  alt={item.name}
-                                  className="w-30 h-30 rounded-lg object-cover shrink-0 cursor-pointer"
-                                  onClick={() => context.handleOpenDishDetailsModal(true, item)}
-                                />
-                              )}
-                              <div className="absolute -bottom-3 left-1/2 -translate-x-1/2 w-24 shadow-md bg-white rounded-xl border border-gray-200 text-center flex flex-col overflow-hidden">
-                                <button className="text-emerald-600 font-extrabold text-sm py-1.5 hover:bg-emerald-50 transition-colors tracking-wide">
-                                  ADD
-                                </button>
-                                
-                              </div>
-                            </div>
+                            <DishItem item={item} />
                           </div>
                         ))
                       ) : (
