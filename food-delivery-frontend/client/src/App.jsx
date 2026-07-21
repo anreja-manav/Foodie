@@ -7,10 +7,11 @@ import Verify from './pages/verify';
 import Login from './pages/Login';
 import ForgotPassword from './pages/reset_password';
 import Header from './components/Header';
-import { fetchDataFromApi } from './utils/api';
+import { fetchDataFromApi, postData } from './utils/api';
 import Home from './pages/Home';
 import Footer from './components/Footer';
 import SearchPage from './pages/SearchPage';
+import CartPage from "./pages/Cart/index.jsx";
 import RestaurantDetail from './pages/RestaurantDetails';
 import Breadcrumbs from './components/Breadcrumbs';
 import RestaurantsList from './components/RestaurantsList';
@@ -25,8 +26,9 @@ function App() {
   const [isLogin, setIsLogin] = useState(false);
   const [windowWidth, setWindowWidth] = useState(window.innerWidth);
   const [userData, setUserData] = useState(null);
-  const [catData, setCatData] = React.useState([]);
-  const [cat, setCat] = React.useState([]);
+  const [catData, setCatData] = useState([]);
+  const [cat, setCat] = useState([]);
+  const [cartData, setCartData] = useState([]);
   const [restaurants, setRestaurants] = useState([]);
   const [formFields, setFormFields] = useState({
     city: "Narnaul"
@@ -35,7 +37,7 @@ function App() {
   const [openLocationPanel, setOpenLocationPanel] = useState(false);
   const [searchData, setSearchData] = useState([]);
   const [openSearchPanel, setOpenSearchPanel] = useState(false);
-  const [openDishDetailsModal, setOpenDishDetailsModal] = React.useState({
+  const [openDishDetailsModal, setOpenDishDetailsModal] = useState({
     open: false,
     item: {}
   });
@@ -93,6 +95,7 @@ function App() {
   useEffect(() => {
     getCat();
     getRestaurants();
+    getCartItems();
     const token = localStorage.getItem("accessToken");
 
     if (token) {
@@ -121,7 +124,10 @@ function App() {
       }
     });
   };
+  // useEffect for cart details
+  useEffect(()=>{
 
+  })
   // Get Restaurants Function
   const getRestaurants = () => {
     fetchDataFromApi(`/restaurants/${formFields.city}`).then((res) => {
@@ -144,12 +150,37 @@ function App() {
     });
   }
 
+  const getCartItems = () => {
+    fetchDataFromApi(`/cart/my_cart`).then((res) => {
+      console.log(res.data?.items);
+      if (res?.error === false) setCartData(res?.data?.items);
+    });
+  };
+
 
   // Alertbox
   const alertBox = (type, msg) => {
     if (type === "success") toast.success(msg);
     if (type === "error") toast.error(msg);
   };
+
+  // add to cart
+  const addToCart = (productId, quantity) => {
+    const data = {
+      "product_id": productId,
+      "quantity": quantity
+    }
+    postData('/cart/add_item', data).then((res) => {
+      if (res?.error === false) {
+        alertBox('success', res?.message);
+        getCartItems();
+      } else {
+        alertBox("error", "Something is wrong. Try again later");
+      }
+    });
+  }
+
+  
 
   // Values to pass in MyContext
   const values = {
@@ -179,6 +210,10 @@ function App() {
     setOpenDishDetailsModal,
     handleCloseDishDetailsModal,
     handleOpenDishDetailsModal,
+    cartData,
+    setCartData,
+    getCartItems,
+    addToCart,
   };
 
   return (
@@ -197,6 +232,7 @@ function App() {
             <Route path="/search" element={<SearchPage />} />
             <Route path="/restaurants/:id" element={<RestaurantDetail />} />
             <Route path="/restaurants" element={<RestaurantsList />} />
+            <Route path="/cart" element={<CartPage />} />
           </Routes>
           </main>
           <Footer />

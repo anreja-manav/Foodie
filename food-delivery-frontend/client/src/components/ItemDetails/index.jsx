@@ -7,6 +7,7 @@ import { TbHeartHandshake } from "react-icons/tb";
 import { IoGitCompareOutline } from "react-icons/io5";
 import { MyContext } from "../../App";
 import { postData } from "../../utils/api";
+import QtyBox from "../QtyBox";
 
 const DishDetailsComponent = (props) => {
     const [dishActionIndex, setDishActionIndex] = React.useState(null);
@@ -16,6 +17,12 @@ const DishDetailsComponent = (props) => {
 
     const context = React.useContext(MyContext);
     const imgUrl = import.meta.env.VITE_API_URL;
+    const item = props?.item;
+    const cartItem = context.cartData?.find(
+        cart => cart.dish.id === item.id
+    );
+
+    const quantity = cartItem?.quantity || 0;
 
 
     const handleClickActiveTab = (index, name) => {
@@ -30,8 +37,8 @@ const DishDetailsComponent = (props) => {
             {/* Image */}
             <div className="h-90">
                 <img
-                    src={`${imgUrl}${props.item.image}`}
-                    alt={props.item.name}
+                    src={`${imgUrl}${item.image}`}
+                    alt={item.name}
                     className="w-full h-full object-cover"
                 />
             </div>
@@ -46,14 +53,14 @@ const DishDetailsComponent = (props) => {
                         {/* Veg/Non Veg */}
                         <div
                             className={`w-5 h-5 border-2 rounded flex items-center justify-center ${
-                                props.item.food_type === "VEG"
+                                item.food_type === "VEG"
                                 ? "border-green-600"
                                 : "border-red-600"
                             }`}
                         >
                             <div
                                 className={`w-2 h-2 rounded-full ${
-                                    props.item.food_type === "VEG"
+                                    item.food_type === "VEG"
                                     ? "bg-green-600"
                                     : "bg-red-600"
                                 }`}
@@ -61,17 +68,17 @@ const DishDetailsComponent = (props) => {
                         </div>
 
                         <h2 className="text-2xl font-bold mt-2">
-                            {props.item.name}
+                            {item.name}
                         </h2>
 
                         <div className="flex items-center gap-2 mt-0.5">
-                            {props.item.old_price && (
+                            {item.old_price && (
                             <span className="text-gray-400 line-through text-sm font-medium">
-                                ₹{props.item.old_price}
+                                ₹{item.old_price}
                             </span>
                             )}
                             <span className="bg-indigo-600 text-white font-bold text-xs px-2 py-0.5 rounded">
-                            ₹{props.item.price}
+                            ₹{item.price}
                             </span>
                         </div>
 
@@ -89,18 +96,26 @@ const DishDetailsComponent = (props) => {
 
                     </div>
 
-                    <Button
-                        variant="outlined"
-                        color="success"
-                        className="font-bold! px-8! py-2! text-emerald-600!"
-                    >
-                        ADD
-                    </Button>
+                    {
+                        quantity === 0 ? (
+                            <Button
+                                className="text-emerald-600 font-extrabold text-sm py-1.5 hover:bg-emerald-50 transition-colors tracking-wide"
+                                onClick={() => context?.addToCart(item.id, 1)}
+                            >
+                                ADD
+                            </Button>
+                        ) : (
+                            <QtyBox
+                                quantity={quantity}
+                                id={item.id}
+                            />
+                        )
+                    }
 
                 </div>
 
                 <p className="mt-6 text-gray-600 leading-8">
-                    {props.item.description}
+                    {item.description}
                 </p>
 
             </div>

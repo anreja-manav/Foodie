@@ -36,7 +36,6 @@ const Header = () => {
 
   const context = useContext(MyContext);
   const history = useNavigate();
-
   const [anchorEl, setAnchorEl] = React.useState(null);
   const open = Boolean(anchorEl);
   const [isOpenCatPanel, setIsOpenCatPanel] = React.useState(false);
@@ -53,7 +52,9 @@ const Header = () => {
     localStorage.clear();
     context?.setIsLogin(false);
     context?.setUserData(null);
+    context?.setCartData([]);
     context.alertBox("success", "Logged out successfully");
+    
     history("");
   };
 
@@ -143,7 +144,7 @@ const Header = () => {
                                 <FaRegUser className="text-[16px] text-[rgba(0,0,0,0.7)]" />
                               </Button>
                               <div className="info flex flex-col max-w-40 ">
-                                <h4 className=" leading-3 text-[13px] text-white! font-medium mb-0 capitalize text-left justify-start truncate">{context?.userData?.Name}</h4>
+                                <h4 className=" leading-3 text-[13px] text-black! font-medium mb-0 capitalize text-left justify-start truncate">{context?.userData?.Name}</h4>
                               </div>
                             </Button>
                             <Menu
@@ -235,7 +236,7 @@ const Header = () => {
                         to="/cart"
                         className="link transition text-[13px] sm:text-[15px] font-bold"
                       >
-                        <IconButton aria-label="cart" onClick={() => context.toggleCartPanel(true)}>
+                        <IconButton aria-label="cart">
                             <StyledBadge badgeContent={context?.cartData?.length !== 0 ? context?.cartData?.length : 0} color="secondary">
                                 <FaCartShopping />
                             </StyledBadge>
