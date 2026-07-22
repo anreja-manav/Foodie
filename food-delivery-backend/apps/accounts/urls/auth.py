@@ -1,5 +1,6 @@
 from django.urls import path
 from apps.accounts.views import AuthViewSet
+from rest_framework_simplejwt.views import TokenRefreshView
 
 register_customer = AuthViewSet.as_view({'post': 'register_customer'})
 register_vendor = AuthViewSet.as_view({'post': 'register_vendor'})
@@ -18,4 +19,5 @@ urlpatterns = [
     path('forgot_password/', forgot_password, name='forgot_password'),
     path('forgot_password/<int:pk>/confirm/', reset_password_confirm, name='reset_password_confirm'),
     path('login/', login, name='login'),
+    path("token/refresh/", TokenRefreshView.as_view(), name="token_refresh"),
 ]
