@@ -14,6 +14,7 @@ const Search = () => {
   const navigate = useNavigate();
 
   useEffect(() => {
+    if (!context?.formFields?.city) return;
     if (!searchQuery.trim() || searchQuery.length <= 2) {
       return;
     }

@@ -95,12 +95,12 @@ function App() {
   useEffect(() => {
     getCat();
     getRestaurants();
-    getCartItems();
     const token = localStorage.getItem("accessToken");
 
     if (token) {
       setIsLogin(true);
       getUserDetails();
+      getCartItems();
     } else {
       setIsLogin(false);
       setUserData(null);
