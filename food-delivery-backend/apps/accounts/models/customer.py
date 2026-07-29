@@ -8,7 +8,10 @@ class CustomerProfile(models.Model):
     def __str__(self):
         return self.user.name or self.user.email or f"Customer {self.id}"
     
-
+ADDRESS_TYPE_CHOICES = [
+    ('home', 'Home'),
+    ('office', 'Office'),
+]
 class CustomerAddress(models.Model):
     customer = models.ForeignKey(
         CustomerProfile,
@@ -16,7 +19,9 @@ class CustomerAddress(models.Model):
         related_name='addresses'
     )
     address = models.TextField()
+    address_type = models.CharField(max_length=10, choices=ADDRESS_TYPE_CHOICES, default='home')
     city = models.CharField(max_length=100)
+    state = models.CharField(max_length=100)
     pincode = models.CharField(max_length=6)
     contact_number = models.CharField(max_length = 10)
     is_default = models.BooleanField(default=False)
