@@ -8,6 +8,7 @@ list_addresses = CustomerViewSet.as_view({'get' : 'list_addresses'})
 add_address = CustomerViewSet.as_view({'post' : 'add_address'})
 update_address = CustomerViewSet.as_view({'patch': 'update_address'})
 delete_address = CustomerViewSet.as_view({'delete': 'delete_address'})
+get_address = CustomerViewSet.as_view({'get': 'get_address'})
 
 urlpatterns = [
     path('profile', customer_profile, name='customer_profile'),
@@ -17,4 +18,5 @@ urlpatterns = [
     path('profile/address/add', add_address, name='add_address'),
     path('profile/address/update/<int:pk>/', update_address, name='update_address'),
     path('profile/address/delete/<int:pk>/', delete_address, name='delete_address'),
+    path('profile/address/<int:pk>/', get_address, name='get_address'),
 ]

@@ -1,6 +1,7 @@
 from rest_framework.decorators import action
 from rest_framework.response import Response
 from rest_framework import status, viewsets
+from rest_framework.parsers import MultiPartParser, FormParser
 
 from apps.accounts.serializers import UserDetailSerializer, CustomerAddressSerializer
 from apps.accounts.models import Account, CustomerProfile, CustomerAddress
@@ -19,7 +20,7 @@ class CustomerViewSet(viewsets.ModelViewSet):
             "Name" : serializer.data['name'],
             "Email" : serializer.data['email'],
             "Phone" : serializer.data['phone'],
-            "Profile Picture" : serializer.data['profile_pic'],
+            "ProfilePicture" : serializer.data['profile_pic'],
             "Role" : serializer.data['role'],
             "Addresses" : serializer.data['customer_addresses']
         })
@@ -30,13 +31,13 @@ class CustomerViewSet(viewsets.ModelViewSet):
         try:
             instance = Account.objects.get(id=request.user.id, role='customer')
         except Account.DoesNotExist:
-            return Response({'detail': 'User not found'}, status=status.HTTP_404_NOT_FOUND)
+            return Response({'error': True, 'message': 'User not found'}, status=status.HTTP_404_NOT_FOUND)
 
         instance.delete()
-        return Response({'detail': 'User deleted successfully'}, status=status.HTTP_204_NO_CONTENT)
+        return Response({'error': False, 'message': 'User deleted successfully'}, status=status.HTTP_200_OK)
     
     # Update Profile
-    @action(detail=False, methods=['patch'], url_path='profile/update')
+    @action(detail=False, methods=['patch'], url_path='profile/update', parser_classes=[MultiPartParser, FormParser])
     def update_profile(self, request):
         id = request.user.id
 
@@ -46,18 +47,22 @@ class CustomerViewSet(viewsets.ModelViewSet):
             return Response({'detail': 'User not found'}, status=status.HTTP_404_NOT_FOUND)
 
         serializer = UserDetailSerializer(instance, data=request.data, partial=True)
+        print(request.data)
         if serializer.is_valid():
+            print(serializer.validated_data)
             serializer.save()
             return Response({
-                "ID" : serializer.data['id'],
-                "Name" : serializer.data['name'],
-                "Email" : serializer.data['email'],
-                "Phone" : serializer.data['phone'],
-                "Profile Picture" : serializer.data['profile_pic'],
-                "Role" : serializer.data['role'],
-                "Addresses" : serializer.data['customer_addresses']
+                "error": False,
+                "message": "Profile Updated Successfully",
+                "data": serializer.data,
+                "status":status.HTTP_200_OK
             })
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        return Response({
+                "error": True,
+                "message": serializer.errors
+            },
+            status=status.HTTP_400_BAD_REQUEST
+)
     
     # List All Addresses
     @action(detail=False, methods=['get'], url_path='profile/address')
@@ -110,7 +115,10 @@ class CustomerViewSet(viewsets.ModelViewSet):
             customer_profile = request.user.customer_profile
         except CustomerProfile.DoesNotExist:
             return Response(
-                {"detail": "User not found"},
+                {   
+                    "error": True,
+                    "message": "User not found"
+                },
                 status=status.HTTP_404_NOT_FOUND
             )
         
@@ -121,7 +129,10 @@ class CustomerViewSet(viewsets.ModelViewSet):
             )
         except CustomerAddress.DoesNotExist:
             return Response(
-                {"detail": "Address not found"},
+                {
+                    "error": True,
+                    "message": "Address not found"
+                },
                 status=status.HTTP_404_NOT_FOUND
             )
         serializer = CustomerAddressSerializer(address, data=request.data, partial=True)
@@ -129,11 +140,15 @@ class CustomerViewSet(viewsets.ModelViewSet):
         if serializer.is_valid():
             serializer.save(customer=customer_profile)
             return Response({
+                "error": False,
                 "message": "Address Updated Successfully",
                 "data": serializer.data
             })
 
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        return Response({
+            "error": True,
+            "message": serializer.errors
+        }, status=status.HTTP_400_BAD_REQUEST)
     
     #Delete Address
     @action(detail=True, method=['delete'], url_path='profile/address/delete')
@@ -143,7 +158,10 @@ class CustomerViewSet(viewsets.ModelViewSet):
             customer_profile = request.user.customer_profile
         except CustomerProfile.DoesNotExist:
             return Response(
-                {"detail": "User not found"},
+                {   
+                    "error": True,
+                    "message": "User not found"
+                },
                 status=status.HTTP_404_NOT_FOUND
             )
         
@@ -154,13 +172,53 @@ class CustomerViewSet(viewsets.ModelViewSet):
             )
         except CustomerAddress.DoesNotExist:
             return Response(
-                {"detail": "Address not found"},
+                {
+                    "error": True,
+                    "message": "Address not found"
+                },
                 status=status.HTTP_404_NOT_FOUND
             )
         
         address.delete()
         return Response(
-            {"message": "Address deleted successfully"},
+            {   
+                "error": False,
+                "message": "Address deleted successfully"
+            },
             status=status.HTTP_200_OK
         )
-    
+    #Get Address
+    @action(detail=True, methods=['get'])
+    def get_address(self, request, pk=None):
+        try:
+            customer_profile = request.user.customer_profile
+        except CustomerProfile.DoesNotExist:
+            return Response(
+                {   
+                    "error": True,
+                    "message": "User not found"
+                },
+                status=status.HTTP_404_NOT_FOUND
+            )
+        
+        try:
+            address = CustomerAddress.objects.get(
+                id=pk,
+                customer=customer_profile
+            )
+        except CustomerAddress.DoesNotExist:
+            return Response(
+                {
+                    "error": True,
+                    "message": "Address not found"
+                },
+                status=status.HTTP_404_NOT_FOUND
+            )
+        serializer = CustomerAddressSerializer(address)
+
+        
+        return Response({
+            "error": False,
+            "message": "Address Fetch Successfully",
+            "data": serializer.data
+        })

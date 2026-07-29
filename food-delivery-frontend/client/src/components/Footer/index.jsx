@@ -13,6 +13,7 @@ import { MyContext } from '../../App';
 import FormControlLabel from '@mui/material/FormControlLabel';
 import Checkbox from '@mui/material/Checkbox';
 import LocationPanel from "../../components/LocationPanel";
+import AddAddress from '../../pages/MyAccount/addAddress';
 
 
 const Footer = () => {
@@ -132,6 +133,21 @@ const Footer = () => {
               <LocationPanel/>
           
       </Drawer>
+      <Drawer
+        open={context.openAddressPanel}
+        onClose={() => context.toggleAddressPanel(false)}
+        anchor="right"
+        PaperProps={{ sx: { width: isMobile ? '100%' : '500px' } }}
+      >
+        <div className="flex items-center justify-between py-4 px-4 border-b">
+          <h4 className="font-bold">{context?.addressMode === "add" ? 'Add' : "Edit"} Address</h4>
+          <IoCloseSharp className="text-[24px] cursor-pointer" onClick={() => context.toggleAddressPanel(false)} />
+        </div>
+        <div className="w-full h-full overflow-auto p-4">
+          <AddAddress />
+        </div>
+      </Drawer>
+
     </footer>
   );
 }

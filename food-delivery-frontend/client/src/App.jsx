@@ -16,6 +16,8 @@ import RestaurantDetail from './pages/RestaurantDetails';
 import Breadcrumbs from './components/Breadcrumbs';
 import RestaurantsList from './components/RestaurantsList';
 import DishDetailsDialog from './components/ItemDetailDialog';
+import MyAccount from './pages/MyAccount/index.jsx';
+import Address from './pages/MyAccount/Address.jsx';
 
 export const MyContext = React.createContext();
 
@@ -41,6 +43,11 @@ function App() {
     open: false,
     item: {}
   });
+
+  const [openAddressPanel, setOpenAddressPanel] = useState(false);
+
+  const [addressMode, setAddressMode] = useState("add");
+  const [addressId, setAddressId] = useState("");
 
 
   const toggleLocationPanel = (newOpen) => {
@@ -112,6 +119,7 @@ function App() {
   const getUserDetails = () => {
     fetchDataFromApi(`accounts/customer/profile`).then((res) => {
       setUserData(res);
+      console.log(res);
       localStorage.setItem("userId", res.ID);
 
       if (res?.response?.data?.error === true) {
@@ -178,7 +186,14 @@ function App() {
         alertBox("error", "Something is wrong. Try again later");
       }
     });
-  }
+  };
+
+  const toggleAddressPanel = (newOpen) => {
+    if (newOpen === false) {
+      setAddressMode("add");
+    }
+    setOpenAddressPanel(newOpen);
+  };
 
   
 
@@ -214,6 +229,13 @@ function App() {
     setCartData,
     getCartItems,
     addToCart,
+    setOpenAddressPanel,
+    toggleAddressPanel,
+    openAddressPanel,
+    addressMode,
+    setAddressMode,
+    addressId,
+    setAddressId,
   };
 
   return (
@@ -233,6 +255,8 @@ function App() {
             <Route path="/restaurants/:id" element={<RestaurantDetail />} />
             <Route path="/restaurants" element={<RestaurantsList />} />
             <Route path="/cart" element={<CartPage />} />
+            <Route path="/my-account" element={<MyAccount/>} />
+            <Route path="/my-address" element={<Address/>} />
           </Routes>
           </main>
           <Footer />
