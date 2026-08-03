@@ -18,6 +18,10 @@ import RestaurantsList from './components/RestaurantsList';
 import DishDetailsDialog from './components/ItemDetailDialog';
 import MyAccount from './pages/MyAccount/index.jsx';
 import Address from './pages/MyAccount/Address.jsx';
+import Checkout from './pages/Checkout/index.jsx';
+import Orders from './pages/Orders/index.jsx';
+import OrderFailed from './pages/Orders/failed.jsx';
+import OrderComplete from './pages/Orders/success.jsx';
 
 export const MyContext = React.createContext();
 
@@ -132,10 +136,8 @@ function App() {
       }
     });
   };
-  // useEffect for cart details
-  useEffect(()=>{
 
-  })
+  
   // Get Restaurants Function
   const getRestaurants = () => {
     fetchDataFromApi(`/restaurants/${formFields.city}`).then((res) => {
@@ -257,6 +259,10 @@ function App() {
             <Route path="/cart" element={<CartPage />} />
             <Route path="/my-account" element={<MyAccount/>} />
             <Route path="/my-address" element={<Address/>} />
+            <Route path="/checkout" element={<Checkout/>} />
+            <Route path="/my-orders" element={<Orders />} />
+            <Route path="/order-failed" element={<OrderFailed />} />
+            <Route path="/order-complete" element={<OrderComplete />} /> 
           </Routes>
           </main>
           <Footer />

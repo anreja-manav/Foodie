@@ -13,7 +13,7 @@ class Orders(models.Model):
         ('PLACED', 'Placed'),
         ('CONFIRMED', 'Confirmed'),
         ('PREPARING', 'Preparing'),
-        ('OUT_FOR_DELIVERY', 'Out for Delivery'),
+        ('OUT_FOR_DELIVERY', 'out_for_delivery'),
         ('DELIVERED', 'Delivered'),
         ('CANCELLED', 'Cancelled'),
     ]
@@ -43,7 +43,7 @@ class Orders(models.Model):
         super().save(*args, **kwargs)
 
     def __str__(self):
-        return f"Order {self.id} - {self.user.user.email}"
+        return f"Order {self.id} - {self.user.user.name}"
     
 class OrderItem(models.Model):
     order = models.ForeignKey(Orders, on_delete=models.CASCADE, related_name='items')
