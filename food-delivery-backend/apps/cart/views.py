@@ -91,3 +91,12 @@ class CartViewSet(viewsets.ModelViewSet):
         ).delete()
 
         return Response({"error": False, "message": "Item removed"})
+
+    @action(detail=False, methods=['delete'])
+    def clear_cart(self, request):
+        customer = request.user.customer_profile
+
+        cart = Cart.objects.get(user=customer)
+        cart.items.all().delete()
+
+        return Response({"message": "Cart cleared"})
