@@ -125,7 +125,7 @@ export const postData = async (url, formData) => {
         return response.data; 
     } catch (error) {
         console.error('API Error:', error.response?.data || error.message);
-        throw error.response?.data || error;
+        return error.response?.data;
     }
 };
 
@@ -136,7 +136,7 @@ export const editData = async (url, updatedData) => {
         return response.data;
     } catch (error) {
         console.error('Edit Error:', error.response?.data);
-        throw error;
+        return error.response?.data;
     }
 };
 
@@ -146,7 +146,7 @@ export const uploadImage = async (url, updatedData) => {
         const response = await api.patch(url, updatedData);
         return response.data;
     } catch (error) {
-        throw error;
+        return error.response?.data || error;
     }
 };
 
@@ -156,6 +156,6 @@ export const deleteData = async (url) => {
         const response = await api.delete(url);
         return response.data;
     } catch (error) {
-        throw error;
+        return error.response?.data || error;
     }
 };

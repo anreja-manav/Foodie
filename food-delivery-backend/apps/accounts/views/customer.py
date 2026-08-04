@@ -47,9 +47,8 @@ class CustomerViewSet(viewsets.ModelViewSet):
             return Response({'detail': 'User not found'}, status=status.HTTP_404_NOT_FOUND)
 
         serializer = UserDetailSerializer(instance, data=request.data, partial=True)
-        print(request.data)
         if serializer.is_valid():
-            print(serializer.validated_data)
+
             serializer.save()
             return Response({
                 "error": False,

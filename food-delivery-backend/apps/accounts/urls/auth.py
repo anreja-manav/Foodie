@@ -9,6 +9,7 @@ verify_otp = AuthViewSet.as_view({'patch': 'verify_otp'})
 regenerate_otp = AuthViewSet.as_view({'patch': 'regenerate_otp'})
 forgot_password = AuthViewSet.as_view({'post': 'forgot_password'})
 reset_password_confirm = AuthViewSet.as_view({'patch': 'reset_password_confirm'})
+reset_password = AuthViewSet.as_view({'patch': 'reset_password'})
 
 
 urlpatterns = [
@@ -20,4 +21,5 @@ urlpatterns = [
     path('forgot_password/<int:pk>/confirm/', reset_password_confirm, name='reset_password_confirm'),
     path('login/', login, name='login'),
     path("token/refresh/", TokenRefreshView.as_view(), name="token_refresh"),
+    path('reset_password/', reset_password, name='reset_password')
 ]

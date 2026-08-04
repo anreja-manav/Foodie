@@ -12,10 +12,11 @@ from django.utils import timezone
 from datetime import timedelta
 
 from apps.accounts.permissions import IsAdmin
+from rest_framework.permissions import IsAuthenticated
 from apps.accounts.models import Account
 from apps.accounts.serializers.auth import VendorRegisterSerializer, CustomerRegisterSerializer, DeliveryRegisterSerializer, AdminRegisterSerializer, LoginSerializer
 from apps.accounts.utils import send_otp
-from apps.accounts.serializers.forgot_password import ForgotPasswordSerializer, ResetPasswordConfirmSerializer
+from apps.accounts.serializers.forgot_password import ForgotPasswordSerializer, ResetPasswordConfirmSerializer, ResetPasswordSerializer
 
 class AuthViewSet(viewsets.ModelViewSet):
     queryset = Account.objects.all()
@@ -34,6 +35,8 @@ class AuthViewSet(viewsets.ModelViewSet):
             return ForgotPasswordSerializer
         if self.action == "reset_password_confirm":
             return ResetPasswordConfirmSerializer
+        if self.action == "reset_password":
+            return ResetPasswordSerializer
 
     def get_serializer_context(self):
         context = super().get_serializer_context()
@@ -147,6 +150,30 @@ class AuthViewSet(viewsets.ModelViewSet):
             "message": "OTP mismatch or session expired.",
             "error": True
         }, status=400)
+
+    @action(detail=False, methods=['patch'], url_path='reset_password', permission_classes = [IsAuthenticated])
+    def reset_password(self, request):
+        id = request.user.id
+
+        try:
+            instance = Account.objects.get(id=id)
+        except Account.DoesNotExist:
+            return Response({'error': True, 'message': 'User not found'}, status=status.HTTP_404_NOT_FOUND)
+
+        serializer = self.get_serializer(data=request.data)
+        if not serializer.is_valid():
+            return Response({
+                "error": True,
+                "message": serializer.errors,    
+            }, status=status.HTTP_400_BAD_REQUEST)
+        new_password = serializer.validated_data['new_password']
+        old_password = serializer.validated_data['old_password']
+
+        if instance.check_password(old_password):
+            instance.set_password(new_password)
+            instance.save()
+            return Response({"message": "Password updated.", "error": False}, status=status.HTTP_200_OK)
+        return Response({"error": True, "message": "Old Password is incorrect"}, status=status.HTTP_401_UNAUTHORIZED)
 
     @action(detail=False, methods=['post'])
     def login(self, request):

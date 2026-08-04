@@ -27,10 +27,9 @@ const MyAccount = () => {
   });
 
   const [changePassword, setChangePassword] = useState({
-    phone: "",
-    oldPassword: "",
-    newPassword: "",
-    confirmPassword: "",
+    old_password: "",
+    new_password: "",
+    confirm_password: "",
   });
 
   useEffect(() => {
@@ -51,10 +50,9 @@ const MyAccount = () => {
     });
 
     setChangePassword({
-      phone: userData.Phone || "",
-      oldPassword: "",
-      newPassword: "",
-      confirmPassword: "",
+      old_password: "",
+      new_password: "",
+      confirm_password: "",
     });
   }, [userData]);
 
@@ -121,9 +119,9 @@ const MyAccount = () => {
     isProfileChanged;
 
   const isPasswordValid =
-    changePassword.oldPassword &&
-    changePassword.newPassword &&
-    changePassword.confirmPassword;
+    changePassword.old_password &&
+    changePassword.new_password &&
+    changePassword.confirm_password;
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -165,7 +163,7 @@ const MyAccount = () => {
   const handleSubmitChangePassword = async (e) => {
     e.preventDefault();
 
-    if (changePassword.newPassword !== changePassword.confirmPassword) {
+    if (changePassword.new_password !== changePassword.confirm_password) {
       context.alertBox("error", "Passwords do not match.");
       return;
     }
@@ -173,8 +171,8 @@ const MyAccount = () => {
     setIsLoading2(true);
 
     try {
-      const res = await postData(
-        "/accounts/forgot-password/",
+      const res = await editData(
+        "/accounts/reset_password/",
         changePassword
       );
 
@@ -185,10 +183,9 @@ const MyAccount = () => {
         );
 
         setChangePassword({
-          phone: userData?.Phone || "",
-          oldPassword: "",
-          newPassword: "",
-          confirmPassword: "",
+          old_password: "",
+          new_password: "",
+          confirm_password: "",
         });
 
         setIsChangePasswordFormShow(false);
@@ -294,8 +291,8 @@ const MyAccount = () => {
                 <TextField
                   type="password"
                   label="Old Password"
-                  name="oldPassword"
-                  value={changePassword.oldPassword}
+                  name="old_password"
+                  value={changePassword.old_password}
                   onChange={onChangePasswordInput}
                   disabled={isLoading2}
                   fullWidth
@@ -304,8 +301,8 @@ const MyAccount = () => {
                 <TextField
                   type="password"
                   label="New Password"
-                  name="newPassword"
-                  value={changePassword.newPassword}
+                  name="new_password"
+                  value={changePassword.new_password}
                   onChange={onChangePasswordInput}
                   disabled={isLoading2}
                   fullWidth
@@ -314,8 +311,8 @@ const MyAccount = () => {
                 <TextField
                   type="password"
                   label="Confirm Password"
-                  name="confirmPassword"
-                  value={changePassword.confirmPassword}
+                  name="confirm_password"
+                  value={changePassword.confirm_password}
                   onChange={onChangePasswordInput}
                   disabled={isLoading2}
                   fullWidth
