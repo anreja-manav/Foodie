@@ -1,1 +1,83 @@
 @import "tailwindcss";
+
+* {
+    margin: 0px;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: "Montserrat", sans-serif;
+    font-optical-sizing: auto;
+    background: #F7F7F7;
+    color: #3e3e3e;
+    overflow-x: hidden;
+}
+
+p {
+    font-size: 14px;
+    line-height: 25px;
+    margin-bottom: 10px;
+    margin-top: 10px;
+}
+
+::-webkit-scrollbar {
+    width: 10px !important;
+    height: 10px !important;
+}
+
+::-webkit-scrollbar-thumb {
+    background: #ccc;
+}
+
+::-webkit-scrollbar-track {
+    background: #fff;
+}
+
+.container {
+    width: 95%;
+
+    margin: auto;
+}
+
+.btn-blue {
+    background: #3872fa !important;
+    color: #fff !important;
+    padding: 8px 20px !important;
+}
+
+
+.btn-org {
+    background: #ff5252 !important;
+    color: #fff !important;
+    font-weight: 500;
+    font-size: 16px;
+    padding: 7px 20px !important;
+}
+
+.btn-org:hover {
+    background: #171717 !important;
+}
+
+.btn-org.btn-border {
+    background: none !important;
+    color: #ff5252 !important;
+    border: 1px solid #ff5252 !important;
+    font-weight: 500;
+    font-size: 16px;
+    padding: 7px 20px !important;
+}
+
+.btn-org.btn-border:hover {
+    background: #171717 !important;
+    color: #fff !important;
+}
+
+.btn-lg {
+    font-size: 18px;
+    padding: 10px 20px !important;
+}
+
+.btn-sm {
+    padding: 6px 20px !important;
+    font-size: 13px !important;
+}
