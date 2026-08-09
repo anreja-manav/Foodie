@@ -337,9 +337,9 @@ class RestaurantViewSet(viewsets.ModelViewSet):
     @action(detail=True, methods=['get'])
     def restaurants_list(self, request, city):
         user_city = city
-        print(user_city)
         restaurants = Restaurant.objects.filter(
-            city=user_city
+            city=user_city,
+            vendor__is_verified=True
         )
         serializer = RestaurantSerializer(restaurants, many=True)
         return Response({

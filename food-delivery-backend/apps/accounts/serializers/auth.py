@@ -85,6 +85,7 @@ class VendorRegisterSerializer(serializers.ModelSerializer):
     class Meta:
         model = Account
         fields = [
+            'id',
             'email',
             'name',
             'phone',

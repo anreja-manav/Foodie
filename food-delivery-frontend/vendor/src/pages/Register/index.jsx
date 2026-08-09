@@ -78,7 +78,7 @@ const Register = () => {
             if (res?.error !== true) {
                 setIsLoading(false);
                 context.alertBox("success", res?.message);
-                
+                console.log(res);
                 localStorage.setItem("userId", res.data.id); 
                 localStorage.setItem("username", formFields.phone);
                 console.log(res);

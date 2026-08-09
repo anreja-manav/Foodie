@@ -176,8 +176,8 @@ class AuthViewSet(viewsets.ModelViewSet):
         return Response({"error": True, "message": "Old Password is incorrect"}, status=status.HTTP_401_UNAUTHORIZED)
 
     @action(detail=False, methods=['post'])
-    def login(self, request):
-        serializer = self.get_serializer(data=request.data)
+    def _login(self, request, role):
+        serializer = LoginSerializer(data=request.data)
         serializer.is_valid(raise_exception=True)
         
         phone = serializer.validated_data['phone']
@@ -196,6 +196,11 @@ class AuthViewSet(viewsets.ModelViewSet):
                 'message': 'Invalid credentials',
                 "error": True
             }, status=status.HTTP_401_UNAUTHORIZED)
+        if user.role != role:
+            return Response({
+                'message': 'You are not authorized to login here.',
+                'error': True
+            }, status=status.HTTP_403_FORBIDDEN)
         
         if not user.is_active:
             return Response({
@@ -211,6 +216,24 @@ class AuthViewSet(viewsets.ModelViewSet):
             'refresh': str(refresh),
             'access': str(refresh.access_token)
         })
+
+    @action(detail=False, methods=['post'])
+    def customer_login(self, request):
+        return self._login(request, 'customer')
+
+    @action(detail=False, methods=['post'])
+    def vendor_login(self, request):
+        return self._login(request, 'vendor')
+
+    @action(detail=False, methods=['post'])
+    def delivery_login(self, request):
+        return self._login(request, 'delivery')
+
+    @action(detail=False, methods=['post'])
+    def admin_login(self, request):
+        return self._login(request, 'admin')
+
+    
     #Admin Registration
     @action(detail=False, methods=["post"], url_path="register/admin", permission_classes=[IsAdmin])
     def register_admin(self, request):
@@ -237,7 +260,7 @@ class AuthViewSet(viewsets.ModelViewSet):
                 "data": serializer.data
             }, status=status.HTTP_201_CREATED)
         return Response({
-            "message": "User Created",
+            "message": "Something wrong",
             "error": True,
             "data":serializer.errors
         }, status=status.HTTP_403_FORBIDDEN)
@@ -250,8 +273,16 @@ class AuthViewSet(viewsets.ModelViewSet):
         )
         if serializer.is_valid():
             serializer.save()
-            return Response(serializer.data, status=status.HTTP_201_CREATED)
-        return Response(serializer.errors)
+            return Response({
+                "message": "Otp Sent to your registered number",
+                "error": False,
+                "data": serializer.data
+            }, status=status.HTTP_201_CREATED)
+        return Response({
+            "message": "Something wrong",
+            "error": True,
+            "data":serializer.errors
+        }, status=status.HTTP_403_FORBIDDEN)
     
     #Delivery Man Registration
     @action(detail=False, methods=["post"], url_path="register/delivery", permission_classes=[IsAdmin])
