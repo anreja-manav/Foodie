@@ -77,7 +77,7 @@ const Login = () => {
             return false
         }
 
-        postData("/accounts/login/", formFields, { withCredentials: true }).then((res)=>{
+        postData("/accounts/login/customer", formFields, { withCredentials: true }).then((res)=>{
 
             if(res?.error!==true){
                 setIsLoading(false);
