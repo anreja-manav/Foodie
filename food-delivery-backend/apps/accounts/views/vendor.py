@@ -2,28 +2,21 @@ from rest_framework.decorators import action
 from rest_framework.response import Response
 from rest_framework import status, viewsets
 
-from apps.accounts.serializers import UserDetailSerializer
+from apps.accounts.serializers import UserDetailSerializer, UserListSerializer
 from apps.accounts.models import Account
-from apps.accounts.permissions import IsVerifiedVendor
+from apps.accounts.permissions import IsVendor
 class VendorViewSet(viewsets.ModelViewSet):
 
     #Profile
-    @action(detail=False, methods=['get'], url_path='profile', permission_classes=[IsVerifiedVendor])
+    @action(detail=False, methods=['get'], url_path='profile', permission_classes=[IsVendor])
     def vendor_profile(self, request):
 
         user = (request.user)
-        serializer = UserDetailSerializer(user)
-        return Response({
-            "ID" : serializer.data['id'],
-            "Name" : serializer.data['name'],
-            "Email" : serializer.data['email'],
-            "Phone" : serializer.data['phone'],
-            "Profile Picture" : serializer.data['profile_pic'],
-            "Role" : serializer.data['role'],
-        })
+        serializer = UserListSerializer(user)
+        return Response({"error": False, "data":serializer.data}, status=status.HTTP_200_OK)
     
     #Delete Profile
-    @action(detail=False, methods=['delete'], url_path='profile/delete', permission_classes=[IsVerifiedVendor])
+    @action(detail=False, methods=['delete'], url_path='profile/delete', permission_classes=[IsVendor])
     def delete_vendor(self, request):
         try:
             instance = Account.objects.get(id=request.user.id, role='vendor')
@@ -34,7 +27,7 @@ class VendorViewSet(viewsets.ModelViewSet):
         return Response({'detail': 'Vendor deleted successfully'}, status=status.HTTP_204_NO_CONTENT)
     
     # Update Profile
-    @action(detail=False, methods=['patch'], url_path='profile/update', permission_classes=[IsVerifiedVendor])
+    @action(detail=False, methods=['patch'], url_path='profile/update', permission_classes=[IsVendor])
     def update_profile(self, request):
         id = request.user.id
 

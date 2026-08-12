@@ -1,20 +1,15 @@
 from rest_framework import serializers
 from apps.accounts.models import VendorProfile
+from apps.restaurants.serializers import RestaurantDetailSerializer
 
 
 class VendorProfileSerializer(serializers.ModelSerializer):
+    restaurant = RestaurantDetailSerializer(read_only=True)
+
     class Meta:
         model = VendorProfile
         fields = [
-            'restaurant_name',
-            'restaurant_address',
-            'resturant_pic',
-            'restaurant_description',
-            'GST_number',
-            'Account_number',
-            'opening_time',
-            'closing_time',
             'is_verified',
-            'is_open'
+            'restaurant',
         ]
         read_only_fields = ['is_verified']
