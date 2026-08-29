@@ -3,11 +3,13 @@ from rest_framework.response import Response
 from rest_framework import status, viewsets
 from apps.accounts.permissions import IsAdmin, IsVerifiedVendor, IsVendor
 from django.shortcuts import get_object_or_404
-from django.db.models import Q
+from django.db.models import Q, Count
 
 from apps.restaurants.models import Category, Product, Restaurant
 from apps.accounts.models import VendorProfile
-from apps.restaurants.serializers import CategorySerializer, ProductSerializer, RestaurantSerializer, RestaurantDetailSerializer
+from apps.restaurants.serializers import CategorySerializer, ProductSerializer, RestaurantSerializer, RestaurantDetailSerializer, PopularProductSerializer
+from apps.orders.models import Orders
+from apps.orders.serializers import OrderSerializer
 from .utils import get_city
 
 # Create your views here.
@@ -356,7 +358,7 @@ class RestaurantViewSet(viewsets.ModelViewSet):
             vendor_profile = request.user.vendor_profile
         except VendorProfile.DoesNotExist:
             return Response(
-                {"message": "User not found"},
+                {"error": True, "message": "Vendor not found"},
                 status=status.HTTP_404_NOT_FOUND
             )
         serializer = RestaurantSerializer(data=request.data)
@@ -364,12 +366,13 @@ class RestaurantViewSet(viewsets.ModelViewSet):
             serializer.save(vendor=vendor_profile)
             return Response(
                 {
+                    "error": False,
                     "data": serializer.data,
                     "message" : "Restaurant Added Successfully"
                 },status=status.HTTP_201_CREATED)
         return Response({
-            "data":serializer.errors,
-            "message" : "Error Occured"
+            "error": True, 
+            "message":serializer.errors,
             }, status=status.HTTP_400_BAD_REQUEST)
     
     @action(detail=True, methods=['patch'], permission_classes=[IsVendor])
@@ -378,7 +381,7 @@ class RestaurantViewSet(viewsets.ModelViewSet):
             vendor_profile = request.user.vendor_profile
         except VendorProfile.DoesNotExist:
             return Response(
-                {"message": "User not found"},
+                {"message": "Vendor not found"},
                 status=status.HTTP_404_NOT_FOUND
             )
         try:
@@ -388,7 +391,7 @@ class RestaurantViewSet(viewsets.ModelViewSet):
             )
         except Restaurant.DoesNotExist:
             return Response(
-                {"message": "Restaurant not found"},
+                {"error": True, "message": "Restaurant not found"},
                 status=status.HTTP_404_NOT_FOUND
             )
         serializer = RestaurantSerializer(restaurant, data=request.data, partial=True)
@@ -396,12 +399,13 @@ class RestaurantViewSet(viewsets.ModelViewSet):
             serializer.save()
             return Response(
                 {
+                    "error": False,
                     "data": serializer.data,
                     "message" : "Restaurant Updated Successfully"
                 },status=status.HTTP_201_CREATED)
         return Response({
-            "data":serializer.errors,
-            "message" : "Error Occured"
+            "error": True,
+            "message":serializer.errors,
             }, status=status.HTTP_400_BAD_REQUEST)
     
     @action(detail=False, methods=['get'], permission_classes=[IsVendor])
@@ -410,26 +414,115 @@ class RestaurantViewSet(viewsets.ModelViewSet):
             vendor_profile = request.user.vendor_profile
         except VendorProfile.DoesNotExist:
             return Response(
-                {"message": "User not found"},
+                {"errro": True, "message": "Vendor not found"},
                 status=status.HTTP_404_NOT_FOUND
             )
         restaurant = getattr(vendor_profile, 'restaurant', None)
         
         if not restaurant:
             return Response(
-                {"message": "No restaurant found for this vendor."},
+                {"error": True, "message": "No restaurant found for this vendor."},
                 status=status.HTTP_404_NOT_FOUND
             )
         serializer = RestaurantSerializer(restaurant)
-        return Response(serializer.data, status=status.HTTP_200_OK)
+        return Response({"error": False, "message": "Success", "data": serializer.data}, status=status.HTTP_200_OK)
     
     @action(detail=False, methods=['get'], permission_classes=[IsVerifiedVendor])
     def my_menu(self, request):
         try:
-            restaurant = request.user.vendor_profile.restaurant
-            products = Product.objects.filter(restaurant=restaurant)
+            vendor_profile = request.user.vendor_profile
+        
+        except VendorProfile.DoesNotExist:
+            return Response(
+                {"errro": True, "message": "Vendor not found"},
+                status=status.HTTP_404_NOT_FOUND
+            )
+        restaurant = getattr(vendor_profile, 'restaurant', None)
+        
+        if not restaurant:
+            return Response(
+                {"error": True, "message": "No restaurant found for this vendor."},
+                status=status.HTTP_404_NOT_FOUND
+            )
+        products = Product.objects.filter(restaurant=restaurant)
             
-            serializer = ProductSerializer(products, many=True)
-            return Response(serializer.data)
-        except (VendorProfile.DoesNotExist, Restaurant.DoesNotExist):
-            return Response({"error": "No restaurant found"}, status=404)
+        serializer = ProductSerializer(products, many=True)
+        return Response({'error': False, 'data':serializer.data}, status=status.HTTP_200_OK)
+
+    @action(detail=False, methods=['get'], permission_classes=[IsVerifiedVendor])
+    def get_orders(self, request):
+        try:
+            vendor_profile = request.user.vendor_profile
+        except (VendorProfile.DoesNotExist, AttributeError):
+            return Response(
+                {"error": True, "message": "Vendor not found"},
+                status=status.HTTP_404_NOT_FOUND
+            )
+
+        restaurant = getattr(vendor_profile, 'restaurant', None)
+        if not restaurant:
+            return Response(
+                {"error": True, "message": "No restaurant found for this vendor."},
+                status=status.HTTP_404_NOT_FOUND
+            )
+
+        orders = (
+            Orders.objects.filter(items__product__restaurant=restaurant)
+            .distinct()
+            .select_related('user__user', 'delivery_address')
+            .prefetch_related('items__product')
+            .order_by('-created_at')
+        )
+
+        serializer = OrderSerializer(orders, many=True)
+        return Response(
+            {
+                "error": False,
+                "message": "Orders fetched successfully",
+                "data": serializer.data
+            },
+            status=status.HTTP_200_OK
+        )
+
+    @action(detail=False, methods=['get'], permission_classes=[IsVerifiedVendor])
+    def popular_dishes(self, request):
+        try:
+            vendor_profile = request.user.vendor_profile
+        except (VendorProfile.DoesNotExist, AttributeError):
+            return Response(
+                {"error": True, "message": "Vendor not found"},
+                status=status.HTTP_404_NOT_FOUND
+            )
+
+        restaurant = getattr(vendor_profile, 'restaurant', None)
+
+        if not restaurant:
+            return Response(
+                {"error": True, "message": "No restaurant found for this vendor."},
+                status=status.HTTP_404_NOT_FOUND
+            )
+
+        products = (
+            Product.objects
+            .filter(restaurant=restaurant)
+            .annotate(
+                order_count=Count(
+                    'order_items__order',
+                    filter=~Q(
+                        order_items__order__order_status='CANCELLED'
+                    ),
+                    distinct=True
+                )
+            )
+            .order_by('-order_count', '-rating')
+        )
+
+        serializer = PopularProductSerializer(products, many=True)
+
+        return Response(
+            {
+                "error": False,
+                "data": serializer.data
+            },
+            status=status.HTTP_200_OK
+        )

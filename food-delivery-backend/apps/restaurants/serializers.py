@@ -32,6 +32,14 @@ class ProductSerializer(serializers.ModelSerializer):
             return round(savings, 0)
         return 0
 
+class PopularProductSerializer(serializers.ModelSerializer):
+    order_count = serializers.IntegerField(read_only=True)
+
+    class Meta:
+        model = Product
+        fields = [
+            'id', 'image', 'rating', 'name', 'price', 'old_price', 'food_type', 'order_count'
+        ]
 
 class CategorySerializer(serializers.ModelSerializer):
     products = serializers.SerializerMethodField()

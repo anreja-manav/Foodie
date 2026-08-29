@@ -11,7 +11,6 @@ class UserDetailSerializer(serializers.ModelSerializer):
         many=True,
         read_only=True
     )
-    vendor_profile = VendorProfileSerializer(read_only=True)
     delivery_profile = DeliveryProfileSerializer(read_only=True)
 
     class Meta:
@@ -24,7 +23,6 @@ class UserDetailSerializer(serializers.ModelSerializer):
             'profile_pic',
             'role',
             'customer_addresses',
-            'vendor_profile',
             'delivery_profile',
         ]
 class UserListSerializer(serializers.ModelSerializer):
@@ -37,4 +35,19 @@ class UserListSerializer(serializers.ModelSerializer):
             'phone',
             'profile_pic',
             'role',
+        ]
+
+class VendorDetailSerializer(serializers.ModelSerializer):
+    vendor_profile = VendorProfileSerializer(read_only=True)
+
+    class Meta:
+        model = Account
+        fields = [
+            'id',
+            'email',
+            'name',
+            'phone',
+            'profile_pic',
+            'role',
+            'vendor_profile'
         ]

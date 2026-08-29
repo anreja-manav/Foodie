@@ -1,5 +1,5 @@
 from .auth import *
-from .account import UserDetailSerializer, UserListSerializer
+from .account import UserDetailSerializer, UserListSerializer, VendorDetailSerializer
 from .customer import CustomerAddressSerializer
 from .vendor import VendorProfileSerializer
 from .delivery import DeliveryProfileSerializer

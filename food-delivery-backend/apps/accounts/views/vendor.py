@@ -2,7 +2,7 @@ from rest_framework.decorators import action
 from rest_framework.response import Response
 from rest_framework import status, viewsets
 
-from apps.accounts.serializers import UserDetailSerializer, UserListSerializer
+from apps.accounts.serializers import UserDetailSerializer, VendorDetailSerializer
 from apps.accounts.models import Account
 from apps.accounts.permissions import IsVendor
 class VendorViewSet(viewsets.ModelViewSet):
@@ -12,7 +12,7 @@ class VendorViewSet(viewsets.ModelViewSet):
     def vendor_profile(self, request):
 
         user = (request.user)
-        serializer = UserListSerializer(user)
+        serializer = VendorDetailSerializer(user)
         return Response({"error": False, "data":serializer.data}, status=status.HTTP_200_OK)
     
     #Delete Profile
@@ -21,10 +21,10 @@ class VendorViewSet(viewsets.ModelViewSet):
         try:
             instance = Account.objects.get(id=request.user.id, role='vendor')
         except Account.DoesNotExist:
-            return Response({'detail': 'Vendor not found'}, status=status.HTTP_404_NOT_FOUND)
+            return Response({'error': False, 'message': 'Vendor not found'}, status=status.HTTP_404_NOT_FOUND)
 
         instance.delete()
-        return Response({'detail': 'Vendor deleted successfully'}, status=status.HTTP_204_NO_CONTENT)
+        return Response({'error': False, 'message': 'Vendor deleted successfully'}, status=status.HTTP_204_NO_CONTENT)
     
     # Update Profile
     @action(detail=False, methods=['patch'], url_path='profile/update', permission_classes=[IsVendor])
@@ -34,17 +34,14 @@ class VendorViewSet(viewsets.ModelViewSet):
         try:
             instance = Account.objects.get(id=id, role='vendor')
         except Account.DoesNotExist:
-            return Response({'detail': 'Vendor not found'}, status=status.HTTP_404_NOT_FOUND)
+            return Response({'error': True, 'message': 'Vendor not found'}, status=status.HTTP_404_NOT_FOUND)
 
-        serializer = UserDetailSerializer(instance, data=request.data, partial=True)
+        serializer = VendorDetailSerializer(instance, data=request.data, partial=True)
         if serializer.is_valid():
             serializer.save()
             return Response({
-                "ID" : serializer.data['id'],
-                "Name" : serializer.data['name'],
-                "Email" : serializer.data['email'],
-                "Phone" : serializer.data['phone'],
-                "Profile Picture" : serializer.data['profile_pic'],
-                "Role" : serializer.data['role'],
-            })
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+                "error": False,
+                "data": serializer.data,
+                "message": "Vendor Updated Successfully"
+            }, status=status.HTTP_202_ACCEPTED)
+        return Response({"error": True, "message":serializer.errors}, status=status.HTTP_400_BAD_REQUEST)
