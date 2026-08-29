@@ -67,6 +67,11 @@ class CategoryViewSet(viewsets.ModelViewSet):
             "error": False,
             "data":serializer.data
         }, status=status.HTTP_200_OK)
+        return Response({
+            "message": "Success",
+            "error": False,
+            "data":serializer.data
+        }, status=status.HTTP_200_OK)
 
 class ProductViewSet(viewsets.ModelViewSet):
     queryset = Product.objects.all()
@@ -264,6 +269,7 @@ class ProductViewSet(viewsets.ModelViewSet):
 
         query = request.query_params.get('query')
         user_city = request.query_params.get('city')
+        user_city = request.query_params.get('city')
 
         if not query:
             return Response({'message': 'query parameter is required'}, status=status.HTTP_400_BAD_REQUEST)
@@ -272,11 +278,15 @@ class ProductViewSet(viewsets.ModelViewSet):
         products = Product.objects.filter(
             Q(name__icontains=query) | Q(description__icontains=query) &
             Q(restaurant__city__iexact=user_city),
+            Q(name__icontains=query) | Q(description__icontains=query) &
+            Q(restaurant__city__iexact=user_city),
             is_available=True,
         ).select_related('restaurant')
 
         # 2. Search Restaurants
         restaurants = Restaurant.objects.filter(
+            (Q(restaurant_name__icontains=query) | Q(restaurant_description__icontains=query)) &
+            Q(city__iexact=user_city),
             (Q(restaurant_name__icontains=query) | Q(restaurant_description__icontains=query)) &
             Q(city__iexact=user_city),
             is_open=True
@@ -320,9 +330,39 @@ class ProductViewSet(viewsets.ModelViewSet):
 
     
 
+    
+
 class RestaurantViewSet(viewsets.ModelViewSet):
     queryset = Restaurant.objects.all()
     serializer_class = RestaurantSerializer
+
+    def get_serializer_class(self):
+        if self.action == 'retrieve':
+            return RestaurantDetailSerializer
+        return super().get_serializer_class()
+    
+    
+    def get_queryset(self):
+        if self.action == 'retrieve':
+            return Restaurant.objects.prefetch_related('menu__category')
+        return super().get_queryset()
+    
+
+    @action(detail=True, methods=['get'])
+    def restaurants_list(self, request, city):
+        user_city = city
+        restaurants = Restaurant.objects.filter(
+            city=user_city,
+            vendor__is_verified=True
+        )
+        serializer = RestaurantSerializer(restaurants, many=True)
+        return Response({
+            "message":"Successfully get Restaurants List",
+            "data":serializer.data,
+            "error": False
+        }, status=status.HTTP_200_OK)
+    
+
 
     def get_serializer_class(self):
         if self.action == 'retrieve':
