@@ -6,9 +6,9 @@ import Login from './pages/Login';
 import ForgotPassword from './pages/Forgot_Password';
 import Verify from './pages/Verify';
 import { BrowserRouter, Route, Routes } from 'react-router-dom';
-import Header from './components/Header';
 import { fetchDataFromApi } from './utils/api';
-import VendorDashboard from './pages/Home';
+import RestaurantDetailsForm from './pages/RestaurantDetailsForm/inedx';
+import HomePage from './pages/Home';
 
 export const MyContext = React.createContext();
 
@@ -16,6 +16,11 @@ function App() {
   const [isLogin, setIsLogin] = useState(false);
   const [windowWidth, setWindowWidth] = useState(window.innerWidth);
   const [vendorData, setVendorData] = useState(null);
+  const [restaurantDetails, setRestaurantDetails] = useState(null);
+  const [categories, setCategories] = useState([]);
+  const [dishes, setDishes] = useState([]);
+  const [popularDishes, setPopularDishes] = useState([]);
+  const [orders, setOrders] = useState([]);
 
   useEffect(() => {
     const token = localStorage.getItem("accessToken");
@@ -23,6 +28,11 @@ function App() {
     if (token) {
       setIsLogin(true);
       getVendorDetails();
+      getRestaurantDetails();
+      getCategories();
+      getDishes();
+      getOrders();
+      getPopularDishes();
     } else {
       setIsLogin(false);
     }
@@ -35,38 +45,102 @@ function App() {
 
   // Function for Vendor Data
   const getVendorDetails = () => {
-      fetchDataFromApi(`accounts/vendor/profile`).then((res) => {
-        if (res?.error === false){
-          setVendorData(res?.data);
-          localStorage.setItem("userId", res.data.id);
-        } else{
-          alertBox("error", "Your session is closed please login again");
-          window.location.href = "/login";
-          setIsLogin(false);
-        }
-      });
-    };
+    fetchDataFromApi(`accounts/vendor/profile`).then((res) => {
+      if (res?.error === false){
+        setVendorData(res?.data);
+        localStorage.setItem("userId", res.data.id);
+      } else{
+        alertBox("error", "Your session is closed please login again");
+        window.location.href = "/login";
+        setIsLogin(false);
+      }
+    });
+  };
 
+  // Get Restaurant Details
+  const getRestaurantDetails = () => {
+    fetchDataFromApi('/restaurants/').then((res) => {
+      setRestaurantDetails(res);
+    })
+  }
+
+  // get categories
+  const getCategories = () => {
+    fetchDataFromApi("/restaurants/categories").then((res) => {
+      if (res?.error !== false) {
+        alertBox("error", "Something went wrong");
+        return false;
+      }
+      setCategories(res?.data);
+    });
+  }
+
+  // Get Dishes
+  const getDishes = () => {
+    fetchDataFromApi('restaurants/my_menu').then((res) => {
+      if (res?.error !== false){
+        alertBox("error", res?.message);
+        return false;
+      }
+      setDishes(res?.data);
+    })
+  }
+
+  const getPopularDishes = () => {
+    fetchDataFromApi('restaurants/popular_products').then((res) =>{
+      if (res?.error != false){
+        alertBox("error", res?.message);
+        return
+      }
+      setPopularDishes(res?.data);
+    })
+  }
+
+  // Get Orders
+  const getOrders = () => {
+    fetchDataFromApi('restaurants/orders').then((res) => {
+      if (res?.error !== false){
+        alertBox("error", res?.message);
+        return false;
+      }
+      setOrders(res?.data);
+    })
+  }
   const values = {
     alertBox,
     isLogin,
     setIsLogin,
     windowWidth,
     vendorData,
+    setVendorData,
+    restaurantDetails,
+    setRestaurantDetails,
+    categories,
+    setCategories,
+    getCategories,
+    dishes,
+    setDishes,
+    getDishes,
+    orders,
+    setOrders,
+    getOrders,
+    popularDishes,
+    setPopularDishes,
+    getPopularDishes,
   }
 
   return (
     <> 
       <BrowserRouter>
         <MyContext.Provider value={values}>
-          <Header />
           <main >
             <Routes>
-              <Route path='/' element={<VendorDashboard />} />
+              <Route path='/' element={<HomePage vendor={vendorData} />} />
               <Route path="/register" element={<Register />} />
               <Route path='/verify' element={<Verify />} />
               <Route path='/login' element={<Login />} />
               <Route path='/forgot_password/confirm' element={<ForgotPassword />} />
+              <Route path='/restaurant' element={<RestaurantDetailsForm />} />
             </Routes>
           </main>
         </MyContext.Provider>

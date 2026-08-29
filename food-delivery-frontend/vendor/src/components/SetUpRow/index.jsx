@@ -1,8 +1,10 @@
 import React from "react";
+import { Link } from "react-router-dom";
 
 const SetupRow = ({ item }) => {
   const Icon = item.icon;
   const locked = item.status === "locked";
+  const ActionIcon = item.actionIcon;
 
   return (
     <div
@@ -38,12 +40,12 @@ const SetupRow = ({ item }) => {
           Locked
         </span>
       ) : (
-        <button
-          type="button"
-          className="text-[13px] font-medium text-blue-500 hover:text-blue-600"
-        >
-          Edit
-        </button>
+        <Link to={item.redirect}>
+          <ActionIcon
+            size={20}
+            className="text-blue-500"
+          />
+        </Link>
       )}
     </div>
   );
