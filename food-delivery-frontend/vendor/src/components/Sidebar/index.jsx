@@ -1,4 +1,4 @@
-import React , {useContext}from "react";
+import React, { useContext } from "react";
 import {
   FiGrid,
   FiFileText,
@@ -8,29 +8,31 @@ import {
   FiSettings,
   FiBell,
 } from "react-icons/fi";
-import { GiBeerBottle } from "react-icons/gi";
 import logo from "../../../../../Assests/Logo.jpg"
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useNavigate, useLocation } from "react-router-dom";
 import { MyContext } from "../../App";
-import Button from "@mui/material/Button";
-
 
 const NAV_ITEMS = [
-  { key: "dashboard", label: "Dashboard", icon: FiGrid, to: "/dashboard" },
+  { key: "dashboard", label: "Dashboard", icon: FiGrid, to: "/" },
   { key: "orders", label: "Orders", icon: FiFileText, to: "/orders" },
   { key: "restaurant", label: "Restaurants", icon: FiMapPin, to: "/restaurant"},
 ];
 
 
-const Sidebar = ({ active = "dashboard", onNavigate = () => {} }) => {
+const Sidebar = () => {
   const context = useContext(MyContext);
-  const history = useNavigate();
+  const navigate = useNavigate();
+  const location = useLocation();
   const vendor = context?.vendorData;
+
+  // Derive the active key from the current path instead of a prop
+  const activeItem = NAV_ITEMS.find((item) => item.to === location.pathname);
+  const active = activeItem?.key;
 
   const logout = async () => {
     if (vendor === null){
       context?.alertBox("error", "You're not login. Please Login First");
-      history("/login");
+      navigate("/login");
     }
     else{
     localStorage.clear();
@@ -38,7 +40,7 @@ const Sidebar = ({ active = "dashboard", onNavigate = () => {} }) => {
     context?.setVendorData(null);
     context.alertBox("success", "Logged out successfully");
 
-    history("/login");
+    navigate("/login");
     }
   };
 
@@ -53,15 +55,15 @@ const Sidebar = ({ active = "dashboard", onNavigate = () => {} }) => {
       </div>
 
       {/* Nav rail */}
-      <nav className="flex-1 rounded-[28px] bg-[#1a1a1a] p-3">
+      <nav className="flex-1 rounded-[28px] bg-[#1a1a1a] p-3 shadow-inner">
         <ul className="flex flex-col gap-1">
-          {NAV_ITEMS.map(({ key, label, icon: Icon }) => {
+          {NAV_ITEMS.map(({ key, label, icon: Icon, to }) => {
             const isActive = key === active;
             return (
               <li key={key}>
+                <Link to={to}>
                 <button
                   type="button"
-                  onClick={() => onNavigate(key)}
                   className={[
                     "flex w-full items-center gap-3 rounded-2xl px-3 py-3 text-sm font-medium transition-colors",
                     isActive
@@ -79,6 +81,7 @@ const Sidebar = ({ active = "dashboard", onNavigate = () => {} }) => {
                   </span>
                   <span className="whitespace-nowrap">{label}</span>
                 </button>
+                </Link>
               </li>
             );
           })}

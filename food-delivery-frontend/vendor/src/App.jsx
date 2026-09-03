@@ -9,6 +9,8 @@ import { BrowserRouter, Route, Routes } from 'react-router-dom';
 import { fetchDataFromApi } from './utils/api';
 import RestaurantDetailsForm from './pages/RestaurantDetailsForm/inedx';
 import HomePage from './pages/Home';
+import Orders from './pages/Orders';
+import Layout from './components/Layout';
 
 export const MyContext = React.createContext();
 
@@ -133,14 +135,20 @@ function App() {
     <> 
       <BrowserRouter>
         <MyContext.Provider value={values}>
-          <main >
+          <main>
             <Routes>
-              <Route path='/' element={<HomePage vendor={vendorData} />} />
+              {/* Auth pages: no sidebar */}
               <Route path="/register" element={<Register />} />
-              <Route path='/verify' element={<Verify />} />
-              <Route path='/login' element={<Login />} />
-              <Route path='/forgot_password/confirm' element={<ForgotPassword />} />
-              <Route path='/restaurant' element={<RestaurantDetailsForm />} />
+              <Route path="/verify" element={<Verify />} />
+              <Route path="/forgot_password/confirm" element={<ForgotPassword />} />
+
+              {/* Pages that share the sidebar */}
+              <Route element={<Layout />}>
+                <Route path="/" element={<HomePage vendor={vendorData} />} />
+                <Route path="/restaurant" element={<RestaurantDetailsForm />} />
+                <Route path="/orders" element={<Orders />} />
+                <Route path="/login" element={<Login />} />
+              </Route>
             </Routes>
           </main>
         </MyContext.Provider>
