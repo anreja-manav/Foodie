@@ -4,12 +4,12 @@ import Button from "@mui/material/Button";
 import { IoMdEye } from "react-icons/io";
 import { IoMdEyeOff } from "react-icons/io";
 import { Link } from 'react-router-dom';
-import { FcGoogle } from "react-icons/fc";
 import CircularProgress from '@mui/material/CircularProgress';
 import { useNavigate } from 'react-router-dom';
 import Stack from "@mui/material/Stack";
 import { MyContext } from "../../App";
 import { postData } from "../../utils/api";
+import { darkFieldSx } from "../../utils/muiDarkStyles";
 
 
 const Register = () => {
@@ -40,48 +40,39 @@ const Register = () => {
         window.scrollTo(0, 0)
     }, [])
 
-
     const valideValue = Object.values(formFields).every(el => el)
 
     const handleSubmit = (e) => {
         e.preventDefault();
-
         setIsLoading(true);
 
         if (formFields.name === "") {
             context.alertBox("error", "Please enter full name")
             return false
         }
-
         if (formFields.email === "") {
             context.alertBox("error", "Please enter full name")
             return false
         }
-
         if (formFields.phone === "") {
             context.alertBox("error", "Please enter Phone Number")
             return false
         }
-
         if (formFields.password === "") {
             context.alertBox("error", "Please enter password")
             return false
         }
-
         if (formFields.password2 === "") {
             context.alertBox("error", "Please enter Confirm password")
             return false
         }
 
-
         postData("accounts/register/vendor", formFields).then((res) => {
             if (res?.error !== true) {
                 setIsLoading(false);
                 context.alertBox("success", res?.message);
-                console.log(res);
                 localStorage.setItem("userId", res.data.id); 
                 localStorage.setItem("username", formFields.phone);
-                console.log(res);
 
                 setFormFields({
                     name: "",
@@ -102,18 +93,17 @@ const Register = () => {
     }
 
     return (
-        <section className='section py-5 sm:py-10 min-h-screen flex items-center justify-center bg-gray-100'>
+        <section className='py-5 sm:py-10 min-h-screen flex items-center justify-center bg-[#0d0d0d]'>
             <div className='container flex justify-center'>
-                <div className='card shadow-md w-full sm:w-100 m-auto rounded-md bg-white p-5 px-10'>
+                <div className='w-full sm:w-100 m-auto rounded-2xl bg-[#1a1a1a] border border-white/10 p-5 px-10 shadow-2xl'>
                 
-                    <h3 className='text-center text-[18px] font-semibold text-black'>
+                    <h3 className='text-center text-[18px] font-semibold text-white'>
                         Register with a new account
                     </h3>
 
                     <form className="w-full mt-5" onSubmit={handleSubmit}>
                         <Stack spacing={3}>
 
-                            {/* Full Name */}
                             <TextField
                                 type="text"
                                 id="name"
@@ -123,10 +113,10 @@ const Register = () => {
                                 label="Full Name"
                                 variant="outlined"
                                 fullWidth
+                                sx={darkFieldSx}
                                 onChange={onChangeInput}
                             />
 
-                            {/* Email */}
                             <TextField
                                 type="text"
                                 id="email"
@@ -136,10 +126,10 @@ const Register = () => {
                                 label="Email"
                                 variant="outlined"
                                 fullWidth
+                                sx={darkFieldSx}
                                 onChange={onChangeInput}
                             />
 
-                            {/* Phone Number */}
                             <TextField
                                 type="tel"
                                 id="phone"
@@ -149,6 +139,7 @@ const Register = () => {
                                 label="Phone Number *"
                                 variant="outlined"
                                 fullWidth
+                                sx={darkFieldSx}
                                 onChange={onChangeInput}
                                 inputProps={{ 
                                     maxLength: 10,
@@ -156,7 +147,6 @@ const Register = () => {
                                 }}
                             />
 
-                            {/* Password Field */}
                             <div className="relative">
                                 <TextField
                                     type={isPasswordShow ? "text" : "password"}
@@ -167,6 +157,7 @@ const Register = () => {
                                     label="Password"
                                     variant="outlined"
                                     fullWidth
+                                    sx={darkFieldSx}
                                     onChange={onChangeInput}
                                 />
                                 
@@ -174,7 +165,7 @@ const Register = () => {
                                     type="button"
                                     className="absolute! top-[50%] right-2.5 -translate-y-1/2 
                                                 w-8.75! h-8.75! min-w-8.75! 
-                                                rounded-full! text-black!"
+                                                rounded-full! text-gray-400!"
                                     onClick={() => setIsPasswordShow(!isPasswordShow)}
                                     >
                                     {isPasswordShow ? (
@@ -185,7 +176,6 @@ const Register = () => {
                                 </Button>
                             </div>
 
-                            {/* Confirm Password Field */}
                             <div className="relative">
                                 <TextField
                                     type={isPasswordShow ? "text" : "password"}
@@ -196,6 +186,7 @@ const Register = () => {
                                     label="Confirm Password"
                                     variant="outlined"
                                     fullWidth
+                                    sx={darkFieldSx}
                                     onChange={onChangeInput}
                                 />
                                 
@@ -203,7 +194,7 @@ const Register = () => {
                                     type="button"
                                     className="absolute! top-[50%] right-2.5 -translate-y-1/2 
                                                 w-8.75! h-8.75! min-w-8.75! 
-                                                rounded-full! text-black!"
+                                                rounded-full! text-gray-400!"
                                     onClick={() => setIsPasswordShow(!isPasswordShow)}
                                     >
                                     {isPasswordShow ? (
@@ -214,19 +205,17 @@ const Register = () => {
                                 </Button>
                             </div>
 
-                            {/* Register Button */}
                             <Button
                                 type="submit"
                                 disabled={!valideValue || isLoading}
-                                className="btn-org btn-lg w-full flex gap-3"
+                                className="w-full! flex! gap-3! bg-red-500! hover:bg-red-600! disabled:bg-[#333]! text-white! py-3! rounded-2xl! normal-case!"
                             >
                                 {isLoading ? <CircularProgress color="inherit" size={22} /> : "Send Otp"}
                             </Button>
 
-                            {/* Login Link */}
-                            <p className="text-center text-sm">
+                            <p className="text-center text-sm text-gray-400">
                                 Already have an account?{" "}
-                                <Link className="link font-semibold text-primary" to="/login">
+                                <Link className="font-semibold text-red-500 hover:text-red-400" to="/login">
                                 Log In
                                 </Link>
                             </p>

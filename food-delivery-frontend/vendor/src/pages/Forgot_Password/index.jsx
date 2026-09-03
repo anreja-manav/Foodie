@@ -7,6 +7,7 @@ import { useNavigate } from 'react-router-dom';
 import { MyContext } from "../../App";
 import CircularProgress from '@mui/material/CircularProgress';
 import { editData } from '../../utils/api';
+import { darkFieldSx } from '../../utils/muiDarkStyles';
 
 const ForgotPassword = () => {
 
@@ -22,7 +23,6 @@ const ForgotPassword = () => {
 
     const context = useContext(MyContext);
     const history = useNavigate();
-
 
     const onChangeInput = (e) => {
         const {name, value} = e.target;
@@ -50,22 +50,18 @@ const ForgotPassword = () => {
             context.alertBox("error", "Please enter password")
             return false
         }
-
         if (formFields.password_confirm === "") {
             context.alertBox("error", "Please enter Confirm password")
             return false
         }
-
         if (formFields.new_password.length < 8){
             context.alertBox("error", "Password lenght must be greater than 8");
             return false;
         }
-
         if (formFields.new_password !== formFields.password_confirm){
             context.alertBox("error", "New Password and Confirm Password must match");
             return false;
         }
-        
 
         setIsLoading(true);
 
@@ -93,19 +89,17 @@ const ForgotPassword = () => {
 
 
     return (
-        <section className='section py-5 sm:py-8 lg:py-10 min-h-screen flex items-center justify-center bg-gray-100'>
+        <section className='py-5 sm:py-8 lg:py-10 min-h-screen flex items-center justify-center bg-[#0d0d0d]'>
 
             <div className='container flex items-center justify-center w-full px-4'>
-                <div className='card shadow-md w-full sm:w-100 m-auto rounded-md bg-white p-5 sm:p-8 flex flex-col'>
+                <div className='w-full sm:w-100 m-auto rounded-2xl bg-[#1a1a1a] border border-white/10 p-5 sm:p-8 flex flex-col shadow-2xl'>
 
-                {/* Heading */}
-                <h3 className='text-center text-[16px] sm:text-[18px] font-bold text-black'>
+                <h3 className='text-center text-[16px] sm:text-[18px] font-bold text-white'>
                     Forgot Password
                 </h3>
 
                 <form className='w-full mt-5 flex flex-col gap-4' onSubmit={handleSubmit}>
 
-                    {/* New Password */}
                     <div className='form-group w-full relative'>
                     <TextField
                         margin='normal'
@@ -114,6 +108,7 @@ const ForgotPassword = () => {
                         label="New Password"
                         variant="outlined"
                         className="w-full text-sm sm:text-base"
+                        sx={darkFieldSx}
                         name="new_password"
                         value={formFields.new_password}
                         disabled={isLoading}
@@ -121,7 +116,7 @@ const ForgotPassword = () => {
                     />
                     <Button
                         type="button"
-                        className="absolute! top-1/2 -translate-y-1/2 right-2 sm:right-3 z-50 w-7.5! h-7.5! min-w-7.5! rounded-full! text-black! p-0"
+                        className="absolute! top-1/2 -translate-y-1/2 right-2 sm:right-3 z-50 w-7.5! h-7.5! min-w-7.5! rounded-full! text-gray-400! p-0"
                         onClick={() => setIsPasswordShow(!isPasswordShow)}
                     >
                         {isPasswordShow ? 
@@ -131,7 +126,6 @@ const ForgotPassword = () => {
                     </Button>
                     </div>
 
-                    {/* Confirm Password */}
                     <div className='form-group w-full relative'>
                     <TextField
                         margin='normal'
@@ -140,6 +134,7 @@ const ForgotPassword = () => {
                         label="Confirm Password"
                         variant="outlined"
                         className="w-full text-sm sm:text-base"
+                        sx={darkFieldSx}
                         name="password_confirm"
                         value={formFields.password_confirm}
                         disabled={isLoading}
@@ -147,7 +142,7 @@ const ForgotPassword = () => {
                     />
                     <Button
                         type="button"
-                        className="absolute! top-1/2 -translate-y-1/2 right-2 sm:right-3 z-50 w-7.5! h-7.5! min-w-7.5! rounded-full! text-black! p-0"
+                        className="absolute! top-1/2 -translate-y-1/2 right-2 sm:right-3 z-50 w-7.5! h-7.5! min-w-7.5! rounded-full! text-gray-400! p-0"
                         onClick={() => setIsPasswordShow2(!isPasswordShow2)}
                     >
                         {isPasswordShow2 ? 
@@ -157,14 +152,13 @@ const ForgotPassword = () => {
                     </Button>
                     </div>
 
-                    {/* Submit Button */}
                     <div className='flex items-center w-full mt-3'>
                     <Button
                         type="submit"
                         disabled={!valideValue}
-                        className="btn-org btn-lg w-full flex gap-2 sm:gap-3 text-sm sm:text-base"
+                        className="w-full! flex! gap-2! sm:gap-3! text-sm! sm:text-base! bg-red-500! hover:bg-red-600! disabled:bg-[#333]! text-white! py-3! rounded-2xl! normal-case!"
                     >
-                        {isLoading ? <CircularProgress color="inherit" /> : 'Change Password'}
+                        {isLoading ? <CircularProgress color="inherit" size={22} /> : 'Change Password'}
                     </Button>
                     </div>
 

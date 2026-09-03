@@ -7,6 +7,7 @@ import { IoMdEyeOff } from "react-icons/io";
 import { MyContext } from "../../App";
 import CircularProgress from '@mui/material/CircularProgress';
 import { postData } from '../../utils/api';
+import { darkFieldSx } from '../../utils/muiDarkStyles';
 
 
 const Login = () => {
@@ -41,8 +42,6 @@ const Login = () => {
                 context.alertBox("error", res?.message);
             }
         })
-        
-
     }
 
     const onChangeInput = (e) => {
@@ -56,15 +55,13 @@ const Login = () => {
     }
 
     useEffect(() => {
-            window.scrollTo(0, 0)
-        }, [])
-    
+        window.scrollTo(0, 0)
+    }, [])
 
     const valideValue = Object.values(formFields).every(el => el)
-    
+
     const handleSubmit = (e) => {
         e.preventDefault();
-
         setIsLoading(true);
 
         if(formFields.phone===""){
@@ -78,7 +75,6 @@ const Login = () => {
         }
 
         postData("/accounts/login/vendor", formFields, { withCredentials: true }).then((res)=>{
-
             if(res?.error!==true){
                 setIsLoading(false);
                 context.alertBox("success", res?.message);
@@ -86,41 +82,30 @@ const Login = () => {
                 phone:"",
                 password:""
                 })
-
                 localStorage.setItem("accessToken", res?.access);
                 localStorage.setItem("refreshToken", res?.refresh);
                 localStorage.setItem("userId", res?.user_id);
-
                 context.setIsLogin(true);
-
                 history("/");
             } else {
                 context.alertBox("error", res?.message);
                 setIsLoading(false);
             }
-
         })
     }
-    
-
-    useEffect(()=>{
-        window.scrollTo(0,0)
-    },[])
 
     return (
-        <section className='section py-5 sm:py-10 min-h-screen flex items-center justify-center bg-gray-100'>
+        <section className='py-5 sm:py-10 h-full w-full flex items-center justify-center bg-[#0d0d0d]'>
 
             <div className="container flex justify-center w-full px-4">
-                <div className='card shadow-md w-full sm:w-100 m-auto rounded-md bg-white p-5 sm:p-8 flex flex-col'>
+                <div className='w-full sm:w-100 m-auto rounded-2xl bg-[#1a1a1a] border border-white/10 p-5 sm:p-8 flex flex-col shadow-2xl'>
 
-                {/* Heading */}
-                <h3 className='text-center text-[16px] sm:text-[18px] font-bold text-black'>
+                <h3 className='text-center text-[16px] sm:text-[18px] font-bold text-white'>
                     Login to your account
                 </h3>
 
                 <form className='w-full mt-5 flex flex-col gap-4' onSubmit={handleSubmit}>
 
-                    {/* Phone Number */}
                     <div className='form-group w-full'>
                         <TextField
                             type="tel"
@@ -131,6 +116,7 @@ const Login = () => {
                             label="Phone Number *"
                             variant="outlined"
                             fullWidth
+                            sx={darkFieldSx}
                             onChange={onChangeInput}
                             inputProps={{ 
                                 maxLength: 10,
@@ -139,7 +125,6 @@ const Login = () => {
                         />
                     </div>
 
-                    {/* Password Input */}
                     <div className='form-group w-full relative'>
                     <TextField
                         margin='normal'
@@ -148,6 +133,7 @@ const Login = () => {
                         label="Password"
                         variant="outlined"
                         className="w-full text-sm sm:text-base"
+                        sx={darkFieldSx}
                         name="password"
                         value={formFields.password}
                         disabled={isLoading}
@@ -155,7 +141,7 @@ const Login = () => {
                     />
                     <Button
                         type="button"
-                        className="absolute! top-1/2 -translate-y-1/2 right-2 sm:right-3 z-50 w-7.5! h-7.5! min-w-7.5! rounded-full! text-black! p-0"
+                        className="absolute! top-1/2 -translate-y-1/2 right-2 sm:right-3 z-50 w-7.5! h-7.5! min-w-7.5! rounded-full! text-gray-400! p-0"
                         onClick={() => setIsPasswordShow(!isPasswordShow)}
                     >
                         {isPasswordShow ? 
@@ -165,32 +151,28 @@ const Login = () => {
                     </Button>
                     </div>
 
-                    {/* Forgot Password */}
-                    <a className="link cursor-pointer text-[12px] sm:text-[14px] font-semibold self-end" onClick={forgotPassword}>
+                    <a className="cursor-pointer text-[12px] sm:text-[14px] font-semibold self-end text-red-500 hover:text-red-400" onClick={forgotPassword}>
                     Forgot Password?
                     </a>
 
-                    {/* Login Button */}
                     <div className='flex items-center w-full mt-3'>
                     <Button
                         type="submit"
                         disabled={!valideValue}
-                        className="btn-org btn-lg w-full flex gap-2 sm:gap-3 text-sm sm:text-base"
+                        className="w-full! flex! gap-2! sm:gap-3! text-sm! sm:text-base! bg-red-500! hover:bg-red-600! disabled:bg-[#333]! text-white! py-3! rounded-2xl! normal-case!"
                     >
-                        {isLoading ? <CircularProgress color="inherit" /> : 'Login'}
+                        {isLoading ? <CircularProgress color="inherit" size={22} /> : 'Login'}
                     </Button>
                     </div>
 
-                    {/* Sign Up Link */}
-                    <p className='text-center text-sm sm:text-[14px]'>
-                    Not Registered? <Link className="link font-semibold text-primary" to="/register">Sign Up</Link>
+                    <p className='text-center text-sm sm:text-[14px] text-gray-400'>
+                    Not Registered? <Link className="font-semibold text-red-500 hover:text-red-400" to="/register">Sign Up</Link>
                     </p>
 
                 </form>
                 </div>
             </div>
         </section>
-
     )
 }
 

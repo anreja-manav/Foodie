@@ -28,7 +28,6 @@ const Verify = () => {
             return;
         }
 
-        // URL structure: base_url + accounts/auth/{id}/verify-otp/
         editData(`accounts/${userId}/verify_otp`, {
             otp: otp
         }).then((res) => {
@@ -69,40 +68,36 @@ const Verify = () => {
     };
 
     return (
-        <section className='section py-5 sm:py-10'>
+        <section className='py-5 sm:py-10 min-h-screen flex items-center bg-[#0d0d0d]'>
           <div className='container flex items-center justify-center'>
-            <div className="card shadow-md w-full max-w-150 mx-auto rounded-md bg-white p-8 box-border">
+            <div className="w-full max-w-150 mx-auto rounded-2xl bg-[#1a1a1a] border border-white/10 p-8 box-border shadow-2xl">
               
-              {/* Icon */}
               <div className="text-center flex items-center justify-center">
-                <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTdjd0u5SbMl2FGC2dNBOCeA6fQi63glaMR2A&s" width="80" alt="OTP Verification" />
+                <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTdjd0u5SbMl2FGC2dNBOCeA6fQi63glaMR2A&s" width="80" alt="OTP Verification" className="rounded-full" />
               </div>
 
-              {/* Heading */}
-              <h3 className='text-center text-[18px] font-semibold text-black mt-4 mb-1'>
+              <h3 className='text-center text-[18px] font-semibold text-white mt-4 mb-1'>
                 Verify OTP
               </h3>
 
-              {/* OTP Info */}
-              <p className="text-center mt-0 mb-4 text-sm">
+              <p className="text-center mt-0 mb-4 text-sm text-gray-400">
                 OTP sent to{" "}
-                <span className="text-primary font-bold">
+                <span className="text-red-500 font-bold">
                   {localStorage.getItem("username")}
                 </span>
               </p>
 
-              {/* OTP Form */}
               <form onSubmit={verifyOTP}>
                 <OtpBox length={5} onChange={handleOtpChange} />
 
                 <div className="flex items-center justify-center pt-5 px-3 pb-3">
-                  <Button type="submit" className="w-full btn-org btn-lg">
+                  <Button type="submit" className="w-full! bg-red-500! hover:bg-red-600! text-white! py-3! rounded-2xl! normal-case!">
                     Verify OTP
                   </Button>
                 </div>
               </form>
-                <div className="flex items-center justify-center px-3 pb-5">
-                  <Button type="submit" className="w-full bg-[#4e73df]! text-white! text-[14px]! py-20px! px-10px!" onClick={resendOTP}>
+                <div className="flex items-center justify-center px-3 pb-2">
+                  <Button type="button" className="w-full! bg-[#292929]! hover:bg-[#333]! text-gray-300! text-[14px]! py-3! rounded-2xl! normal-case!" onClick={resendOTP}>
                     Resend OTP
                   </Button>
                 </div>

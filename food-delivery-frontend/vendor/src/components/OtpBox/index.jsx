@@ -40,7 +40,7 @@ const OtpBox = ({ length, onChange }) => {
           value={otp[index]}
           onChange={(e) => handleChange(e, index)}
           onKeyDown={(e) => handleKeyDown(e, index)}
-          className="w-10 h-12.5 border-2 border-gray-300 rounded-md text-center text-[20px] focus:border-primary outline-none text-black"
+          className="w-10 h-12.5 border-2 border-white/15 rounded-md text-center text-[20px] bg-[#292929] focus:border-red-500 outline-none text-white"
         />
       ))}
     </div>
