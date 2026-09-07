@@ -7,10 +7,11 @@ import ForgotPassword from './pages/Forgot_Password';
 import Verify from './pages/Verify';
 import { BrowserRouter, Route, Routes } from 'react-router-dom';
 import { fetchDataFromApi } from './utils/api';
-import RestaurantDetailsForm from './pages/RestaurantDetailsForm/inedx';
 import HomePage from './pages/Home';
 import Orders from './pages/Orders';
 import Layout from './components/Layout';
+import RestaurantDetails from './pages/RestaurantDetails/inedx';
+import RestaurantForm from './pages/RestaurantForm';
 
 export const MyContext = React.createContext();
 
@@ -62,7 +63,10 @@ function App() {
   // Get Restaurant Details
   const getRestaurantDetails = () => {
     fetchDataFromApi('/restaurants/').then((res) => {
-      setRestaurantDetails(res);
+      if (res?.error === false){
+        setRestaurantDetails(res?.data);
+        return
+      }
     })
   }
 
@@ -117,6 +121,7 @@ function App() {
     setVendorData,
     restaurantDetails,
     setRestaurantDetails,
+    getRestaurantDetails,
     categories,
     setCategories,
     getCategories,
@@ -145,7 +150,8 @@ function App() {
               {/* Pages that share the sidebar */}
               <Route element={<Layout />}>
                 <Route path="/" element={<HomePage vendor={vendorData} />} />
-                <Route path="/restaurant" element={<RestaurantDetailsForm />} />
+                <Route path="/restaurant" element={<RestaurantDetails />} />
+                <Route path="/restaurant/form" element={<RestaurantForm />} />
                 <Route path="/orders" element={<Orders />} />
                 <Route path="/login" element={<Login />} />
               </Route>
