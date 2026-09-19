@@ -2,6 +2,7 @@ import React, { useContext } from "react";
 import { MyContext } from "../../App";
 import { editData } from "../../utils/api";
 import Switch from "@mui/material/Switch";
+import { Link } from "react-router-dom";
 
 
 const Header = () => {
@@ -11,7 +12,7 @@ const Header = () => {
   const BaseURL = import.meta.env.VITE_API_URL;
 
   const toggleOpenClosed = (state) => {
-      editData(`restaurants/update/${restaurant.id}/`,{'is_open':state} ).then((res) => {
+      editData(`restaurants/update/${restaurant?.id}/`,{'is_open':state} ).then((res) => {
         if (res?.error === false){
           if (state === false){
             context?.alertBox("success", "Restaurant Closed");
@@ -32,11 +33,13 @@ const Header = () => {
         {restaurant ?
           <div className="rounded-2xl bg-[#1a1a1a] border border-white/10 p-6 lg:flex items-center justify-between shadow-2xl">
             <div className="flex items-center gap-5">
+              <Link to='/restaurant'>
               <img
                 src={`${BaseURL}${restaurant?.resturant_pic}`}
                 alt={restaurant?.restaurant_name}
-                className="h-15 w-15 rounded-full object-cover shrink-0"
+                className="h-15 w-15 rounded-full object-cover shrink-0 cursor-pointer"
               />
+              </Link>
               <h1 className="text-[12px] sm:text-[18px] lg:text-[22px] font-bold text-white uppercase tracking-wide">
                 {restaurant?.restaurant_name}
               </h1>

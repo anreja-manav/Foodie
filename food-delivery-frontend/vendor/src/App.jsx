@@ -12,7 +12,8 @@ import Orders from './pages/Orders';
 import Layout from './components/Layout';
 import RestaurantDetails from './pages/RestaurantDetails/inedx';
 import RestaurantForm from './pages/RestaurantForm';
-
+import Menu from './pages/Menu';
+import AddProduct from './pages/AddProduct';
 export const MyContext = React.createContext();
 
 function App() {
@@ -63,6 +64,7 @@ function App() {
   // Get Restaurant Details
   const getRestaurantDetails = () => {
     fetchDataFromApi('/restaurants/').then((res) => {
+      console.log(res);
       if (res?.error === false){
         setRestaurantDetails(res?.data);
         return
@@ -154,6 +156,8 @@ function App() {
                 <Route path="/restaurant/form" element={<RestaurantForm />} />
                 <Route path="/orders" element={<Orders />} />
                 <Route path="/login" element={<Login />} />
+                <Route path='/restaurant/menu' element={<Menu />} />
+                <Route path="/restaurant/menu/add" element={<AddProduct />} />
               </Route>
             </Routes>
           </main>

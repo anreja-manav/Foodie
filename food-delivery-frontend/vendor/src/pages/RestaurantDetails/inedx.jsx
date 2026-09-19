@@ -7,9 +7,7 @@ import { FiArrowUpRight, FiEdit2 } from "react-icons/fi";
 import NotLogin from '../../components/notLogin';
 import VendorNotVerifiedDashboard from '../../components/VendorNotVerified';
 import { editData } from '../../utils/api';
-import OrderList from '../../components/OrderList';
-import DishSlider from '../../components/DishSlider';
-import SectionHeading from '../../components/SectionHeading';
+import Header from '../../components/Header';
 
 const RestaurantDetails = () => {
   const context = useContext(MyContext);
@@ -67,39 +65,7 @@ const RestaurantDetails = () => {
       {restaurant ? (
         <>
           {/* Restaurant status banner */}
-          <div className="rounded-2xl bg-[#1a1a1a] border border-white/10 p-6 lg:flex items-center justify-between shadow-2xl">
-            <div className="flex items-center gap-5">
-              <img
-                src={`${BaseURL}${restaurant?.resturant_pic}`}
-                alt={restaurant?.restaurant_name}
-                className="h-15 w-15 rounded-full object-cover shrink-0"
-              />
-              <h1 className="text-[12px] sm:text-[18px] lg:text-[22px] font-bold text-white uppercase tracking-wide">
-                {restaurant?.restaurant_name}
-              </h1>
-            </div>
-
-            <div className="flex items-center gap-3">
-              <span className="text-xs font-semibold tracking-wide text-gray-400">
-                RESTAURANT STATUS
-              </span>
-              <span className={`text-sm font-bold ${restaurant?.is_open ? "text-green-500" : "text-gray-500"}`}>
-                OPEN
-              </span>
-              <Switch
-                checked={!restaurant?.is_open}
-                onChange={() => toggleOpenClosed(!restaurant?.is_open)}
-                sx={{
-                  '& .MuiSwitch-switchBase.Mui-checked': { color: '#ef4444' },
-                  '& .MuiSwitch-switchBase.Mui-checked + .MuiSwitch-track': { backgroundColor: '#ef4444' },
-                  '& .MuiSwitch-track': { backgroundColor: '#3a3a3a' },
-                }}
-              />
-              <span className={`text-sm font-bold ${!restaurant?.is_open ? "text-red-500" : "text-gray-500"}`}>
-                CLOSED
-              </span>
-            </div>
-          </div>
+          <Header />
 
           {/* Info row */}
           <div className="mt-6 flex items-center justify-between py-4">
@@ -115,7 +81,7 @@ const RestaurantDetails = () => {
               </p>
             </div>
 
-            <Link to="/restaurant/edit">
+            <Link to="/restaurant/menu">
               <Button
                 variant="contained"
                 sx={{
@@ -160,7 +126,7 @@ const RestaurantDetails = () => {
                 <span className="text-xs font-semibold tracking-wide text-gray-400">
                   TOTAL PRODUCTS
                 </span>
-                <Link to="/restaurant/edit" className="text-xs font-semibold text-red-500 hover:text-red-400">
+                <Link to="/restaurant/menu" className="text-xs font-semibold text-red-500 hover:text-red-400">
                   Manage Menu
                 </Link>
               </div>

@@ -8,6 +8,7 @@ import {
   FiSettings,
   FiBell,
 } from "react-icons/fi";
+import { IoFastFood } from "react-icons/io5";
 import logo from "../../../../../Assests/Logo.jpg"
 import { Link, useNavigate, useLocation } from "react-router-dom";
 import { MyContext } from "../../App";
@@ -16,6 +17,7 @@ const NAV_ITEMS = [
   { key: "dashboard", label: "Dashboard", icon: FiGrid, to: "/" },
   { key: "orders", label: "Orders", icon: FiFileText, to: "/orders" },
   { key: "restaurant", label: "Restaurants", icon: FiMapPin, to: "/restaurant"},
+  { key: "menu", label: "Menu", icon: IoFastFood, to: "/restaurant/menu"},
 ];
 
 
