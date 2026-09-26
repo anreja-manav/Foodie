@@ -186,10 +186,10 @@ const Menu = () => {
                         </button>
                       </div>
 
-                      {/* Description */}
+                      {/* Description + Size*/}
                       {product.description && (
                         <p className="mt-1 text-xs text-gray-500 line-clamp-2">
-                          {product.description}
+                          {product.description} {product.size && <span>({product.size})</span>}
                         </p>
                       )}
 

@@ -20,7 +20,7 @@ class ProductSerializer(serializers.ModelSerializer):
             'id', 'name', 'description', 'price', 'old_price', 
             'savings_percentage', 'food_type', 'food_type_display', 
             'rating', 'image', 'is_available', 'is_bestseller', 'preparation_time',
-            'restaurant', 'restaurant_id', 'restaurant_rating', 'category'
+            'restaurant', 'restaurant_id', 'restaurant_rating', 'category', 'size'
         ]
 
     def get_image(self, obj):

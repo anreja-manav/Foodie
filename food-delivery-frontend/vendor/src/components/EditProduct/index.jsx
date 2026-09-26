@@ -27,6 +27,7 @@ const buildFields = (p) => ({
   price: p?.price ?? "",
   old_price: p?.old_price ?? "",
   food_type: p?.food_type ?? "VEG",
+  size: p?.size ?? "",
   preparation_time: p?.preparation_time ?? 20,
   is_available: !!p?.is_available,
   is_bestseller: !!p?.is_bestseller,
@@ -47,7 +48,6 @@ const EditProduct = ({ product, onClose, onUpdated, getCategoryProducts}) => {
   const picInputRef = useRef(null);
   const categories = context?.categories || [];
 
-  // Close on Escape
   useEffect(() => {
     const onKey = (e) => e.key === "Escape" && !isLoading && onClose?.();
     window.addEventListener("keydown", onKey);
@@ -254,20 +254,33 @@ const EditProduct = ({ product, onClose, onUpdated, getCategoryProducts}) => {
               </div>
             </div>
 
-            {/* Description */}
-            <div>
-              <label className={labelClasses}>Description</label>
-              <textarea
-                rows={3}
-                name="description"
-                className={inputClasses}
-                placeholder="Short description shown to customers"
-                value={formFields.description}
-                onChange={onChangeInput}
-              />
-              {errors.description && (
-                <p className="mt-1 text-xs text-red-500">{errors.description}</p>
-              )}
+            {/* Description + Size */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 py-3 m-3">
+              <div>
+                <label className={labelClasses}>Description</label>
+                <textarea
+                  rows={3}
+                  name="description"
+                  className={inputClasses}
+                  placeholder="Short description shown to customers"
+                  value={formFields.description}
+                  onChange={onChangeInput}
+                />
+                {errors.description && (
+                  <p className="mt-1 text-xs text-red-500">{errors.description}</p>
+                )}
+              </div>
+              <div>
+                <label className={labelClasses}>Size (optional)</label>
+                <input
+                  name="size"
+                  className={inputClasses}
+                  placeholder="Size"
+                  value={formFields.size}
+                  onChange={onChangeInput}
+                />
+                {errors.size && <p className="mt-1 text-xs text-red-500">{errors.size}</p>}
+              </div>
             </div>
 
             {/* Price + Old price + Food type */}

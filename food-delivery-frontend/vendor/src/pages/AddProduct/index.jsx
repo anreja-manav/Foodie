@@ -31,6 +31,7 @@ const AddProduct = () => {
     price: "",
     old_price: "",
     food_type: "VEG",
+    size: "",
     preparation_time: 20,
     is_available: true,
     is_bestseller: false,
@@ -97,6 +98,7 @@ const AddProduct = () => {
     formData.append("price", formFields.price);
     formData.append("old_price", formFields.old_price);
     formData.append("food_type", formFields.food_type);
+    formData.append("size", formFields.size);
     formData.append("preparation_time", formFields.preparation_time);
     formData.append("is_available", formFields.is_available);
     formData.append("is_bestseller", formFields.is_bestseller);
@@ -211,20 +213,33 @@ const AddProduct = () => {
               </div>
             </div>
 
-            {/* Description */}
-            <div>
-              <label className={labelClasses}>Description</label>
-              <textarea
-                rows={3}
-                name="description"
-                className={inputClasses}
-                placeholder="Short description shown to customers"
-                value={formFields.description}
-                onChange={onChangeInput}
-              />
-              {errors.description && (
-                <p className="mt-1 text-xs text-red-500">{errors.description}</p>
-              )}
+            {/* Description + Size */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <div>
+                <label className={labelClasses}>Description</label>
+                <textarea
+                  rows={3}
+                  name="description"
+                  className={inputClasses}
+                  placeholder="Short description shown to customers"
+                  value={formFields.description}
+                  onChange={onChangeInput}
+                />
+                {errors.description && (
+                  <p className="mt-1 text-xs text-red-500">{errors.description}</p>
+                )}
+              </div>
+              <div>
+                <label className={labelClasses}>Size (optional)</label>
+                <input
+                  name="size"
+                  className={inputClasses}
+                  value={formFields.size}
+                  placeholder="Size"
+                  onChange={onChangeInput}
+                />
+                {errors.size && <p className="mt-1 text-xs text-red-500">{errors.size}</p>}
+              </div>
             </div>
 
             {/* Price + Old price + Food type */}
