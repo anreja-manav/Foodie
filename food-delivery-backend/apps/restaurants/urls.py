@@ -3,9 +3,9 @@ from apps.restaurants.views import CategoryViewSet, ProductViewSet, RestaurantVi
 from apps.accounts.permissions import IsVerifiedVendor, IsAdmin, IsVendor
 
 category_list = CategoryViewSet.as_view({'get': 'list'})
-create_category = CategoryViewSet.as_view({'post': 'create_category'}, permission_classes = [IsVerifiedVendor, IsAdmin])
-update_category = CategoryViewSet.as_view({'patch': 'update_category'}, permission_classes = [IsVerifiedVendor, IsAdmin])
-delete_category = CategoryViewSet.as_view({'delete': 'delete_category'}, permission_classes = [IsVerifiedVendor, IsAdmin])
+create_category = CategoryViewSet.as_view({'post': 'create_category'}, permission_classes = [IsVerifiedVendor | IsAdmin])
+update_category = CategoryViewSet.as_view({'patch': 'update_category'}, permission_classes = [IsVerifiedVendor | IsAdmin])
+delete_category = CategoryViewSet.as_view({'delete': 'delete_category'}, permission_classes = [IsVerifiedVendor | IsAdmin])
 category_products = CategoryViewSet.as_view({'get': 'products'})
 
 add_product = ProductViewSet.as_view({'post': 'add_product'}, permission_classes = [IsVerifiedVendor])

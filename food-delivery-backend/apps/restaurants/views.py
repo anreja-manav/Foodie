@@ -27,28 +27,30 @@ class CategoryViewSet(viewsets.ModelViewSet):
     
     
     
-    @action(detail=True, methods=['delete'], permission_classes = [IsVerifiedVendor, IsAdmin])
+    @action(detail=True, methods=['delete'], permission_classes = [IsVerifiedVendor | IsAdmin])
     def delete_category(self, request, pk=None):
         category = self.get_object()
         category.delete()
         return Response({'message': 'category deleted'}, status=status.HTTP_204_NO_CONTENT)
     
-    @action(detail=False, methods=['post'], permission_classes = [IsVerifiedVendor, IsAdmin])
+    @action(detail=False, methods=['post'], permission_classes = [IsVerifiedVendor | IsAdmin])
     def create_category(self, request):
         serializer = CategorySerializer(data=request.data)
         if serializer.is_valid():
             serializer.save()
             return Response(
-                {
+                {   
+                    "error": False,
                     "data": serializer.data,
                     "message" : "Category Added Successfully"
                 },status=status.HTTP_201_CREATED)
         return Response({
+            "error": True,
             "data":serializer.errors,
             "message" : "Error Occured"
             }, status=status.HTTP_400_BAD_REQUEST)
     
-    @action(detail=True, methods=['patch'], permission_classes = [IsVerifiedVendor, IsAdmin])
+    @action(detail=True, methods=['patch'], permission_classes = [IsVerifiedVendor | IsAdmin])
     def update_category(self, request, pk=None):
         category = self.get_object()
         name = request.data.get('name')

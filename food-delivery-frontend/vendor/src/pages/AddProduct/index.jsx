@@ -4,6 +4,7 @@ import { useNavigate } from "react-router-dom";
 import { Button, Switch } from "@mui/material";
 import { FiUploadCloud, FiX } from "react-icons/fi";
 import { postData } from "../../utils/api";
+import AddCategory from "../../components/AddCategory";
 
 const FOOD_TYPES = [
   { value: "VEG", label: "Vegetarian" },
@@ -39,12 +40,17 @@ const AddProduct = () => {
   const [picFile, setPicFile] = useState(null);
   const [picPreview, setPicPreview] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
+  const [showCategoryModal, setShowCategoryModal] = useState(false);
   const [errors, setErrors] = useState({});
   const picInputRef = useRef(null);
   const categories = context?.categories || [];
 
   const onChangeInput = (e) => {
     const { name, value } = e.target;
+    if (name === "category" && value === "add_category") {
+      setShowCategoryModal(true);
+      return;
+    }
     setFormFields((prev) => ({ ...prev, [name]: value }));
     setErrors((prev) => ({ ...prev, [name]: "" }));
   };
@@ -208,6 +214,7 @@ const AddProduct = () => {
                       {cat.name}
                     </option>
                   ))}
+                  <option value="add_category">+ Add Category</option>
                 </select>
                 {errors.category && <p className="mt-1 text-xs text-red-500">{errors.category}</p>}
               </div>
@@ -365,7 +372,16 @@ const AddProduct = () => {
           </div>
         </form>
       </div>
+      {showCategoryModal && (
+        <AddCategory
+          onClose={() => setShowCategoryModal(false)}
+          onCategoryAdded={(category) =>
+            setFormFields((prev) => ({ ...prev, category: category.id }))
+          }
+        />
+      )}
     </div>
+    
   );
 };
 
