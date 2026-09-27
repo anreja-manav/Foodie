@@ -41,7 +41,7 @@ const DishItem = (props) => {
                 )}
                 {item.description && (
                 <div className="text-gray-400 text-xs mt-1 line-clamp-2">
-                    {item.description}
+                    {item.description} {item.size && <span>({item.size})</span>}
                 </div>
                 )}
             </div>

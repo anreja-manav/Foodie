@@ -54,7 +54,7 @@ const CartItems = (props) => {
       {/* Image */}
       <div className="img w-[30%] sm:w-[20%] lg:w-[15%] rounded-md overflow-hidden">
           <img
-            src={`${imgUrl}${dish?.image}`}
+            src={dish?.image}
             alt={dish?.name}
             className="w-full group-hover:scale-105 transition-all"
             onClick={() => context.handleOpenDishDetailsModal(true, dish)}
@@ -76,7 +76,7 @@ const CartItems = (props) => {
           }`} />
         </div>
         <h3 className="text-[13px] sm:text-[15px] w-[80%]">
-          {dish?.name}
+          {dish?.name} {dish.size && <span>({dish.size})</span>}
         </h3>
 
         

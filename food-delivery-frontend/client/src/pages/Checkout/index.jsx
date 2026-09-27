@@ -250,14 +250,14 @@ const Checkout = () => {
                         <div className="flex items-center gap-2 sm:gap-3 w-[65%]">
 
                           <img
-                            src={`${Base_URL}${item.dish.image}`}
+                            src={item.dish.image}
                             alt=""
                             className="w-10 h-10 sm:w-12 sm:h-12 object-cover rounded"
                           />
 
                           <div className="min-w-0">
                             <p className="text-xs sm:text-sm font-medium truncate">
-                              {item.dish.name}
+                              {item.dish.name} {item.dish.size && <span>({item.dish.size})</span>}
                             </p>
 
                             <p className="text-[11px] sm:text-xs text-gray-500">

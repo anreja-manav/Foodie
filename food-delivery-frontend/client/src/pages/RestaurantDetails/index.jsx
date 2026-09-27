@@ -168,7 +168,7 @@ const RestaurantDetail = () => {
                         category.products.map((item, itemIndex) => (
                           <div
                             key={item.id ?? itemIndex}
-                            className="flex items-center justify-between gap-4"
+                            className="flex items-center justify-between gap-4 pb-5"
                           >
                             <DishItem item={item} />
                           </div>
