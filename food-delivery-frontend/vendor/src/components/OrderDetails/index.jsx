@@ -1,19 +1,34 @@
-import React, { useState } from "react";
+import React, { useState, useContext } from "react";
 import {
   FiMapPin,
   FiClock,
   FiShoppingCart,
   FiX,
 } from "react-icons/fi";
+import { editData } from "../../utils/api";
+import {MyContext} from "../../App";
 
-const TABS = [
-  "Delivery",
-  "Dine In",
-  "Takeaway",
-];
 
 const OrderDetails = ({ order, onBack }) => {
-  const [tab, setTab] = useState("Delivery");
+  const STATUS_FLOW = ["PLACED", "CONFIRMED", "PREPARING", "OUT_FOR_DELIVERY", "DELIVERED"];
+
+  const NEXT_STEP_LABEL = {
+    PLACED: "Confirm Order",
+    CONFIRMED: "Preparing",
+    PREPARING: "Out for Delivery",
+    OUT_FOR_DELIVERY: "Mark as Delivered",
+  };
+  
+  const getNextStatus = (current) => {
+    const idx = STATUS_FLOW.indexOf(current);
+    if (idx === -1 || idx === STATUS_FLOW.length - 1) return null;
+    return STATUS_FLOW[idx + 1];
+  };
+
+  const context = useContext(MyContext);
+  const [status, setStatus] = useState(order?.order_status || "PLACED");
+  const [updating, setUpdating] = useState(false);
+  const [error, setError] = useState(null);
 
   const BaseURL = import.meta.env.VITE_API_URL;
 
@@ -22,6 +37,38 @@ const OrderDetails = ({ order, onBack }) => {
   }
 
   const items = order?.items || [];
+
+  const updateOrderStatus = async (newStatus, id) => {
+    if (!newStatus || updating) return;
+    if (!id){
+      context?.alertBox("error", "Order Id is required");
+      return
+    }
+    setUpdating(true);
+    setError(null);
+    try{
+      const res = await editData(`/orders/update/${id}/status`, {"order_status": newStatus})
+      if (res?.error === false){
+        setStatus(newStatus);
+        context?.alertBox("success", `Order Staus is ${newStatus}`);
+        context?.getOrders();
+      }else{
+        context?.alertBox("error", res?.message || "Failed to update status");
+        return;
+      }
+    }catch (err) {
+      context?.alertBox("error", "Something went wrong. Please try again.");
+    } finally {
+      setUpdating(false);
+    }
+  }
+
+  const handleAdvanceStatus = (id) => updateOrderStatus(getNextStatus(status), id);
+  const handleCancelOrder = (id) => updateOrderStatus("CANCELLED", id);
+ 
+  const isCancelled = status === "CANCELLED";
+  const isDelivered = status === "DELIVERED";
+  const nextLabel = NEXT_STEP_LABEL[status];
 
   return (
     <aside
@@ -113,10 +160,10 @@ const OrderDetails = ({ order, onBack }) => {
 
 
       {/* Cart */}
-      <div className="mt-6">
+      <div className="mt-6 pt-6 ">
 
         {/* Cart Header */}
-        <div className="mb-4 flex items-center justify-between">
+        <div className="pb-4 flex items-center justify-between border-b border-white/10">
 
           <h3 className="flex items-center gap-2 text-base font-semibold text-white">
             <FiShoppingCart size={17} />
@@ -126,48 +173,6 @@ const OrderDetails = ({ order, onBack }) => {
           <span className="text-xs text-gray-500">
             Order ID: #{order.id}
           </span>
-
-        </div>
-
-
-        {/* Tabs */}
-        <div
-          className="
-            flex
-            items-center
-            rounded-full
-            border
-            border-white/20
-            bg-[#292929]
-            p-1
-          "
-        >
-
-          {TABS.map((t) => (
-
-            <button
-              key={t}
-              type="button"
-              onClick={() => setTab(t)}
-              className={`
-                flex-1
-                rounded-full
-                py-2
-                text-xs
-                font-semibold
-                transition-all
-
-                ${
-                  tab === t
-                    ? "bg-red-500 text-white shadow"
-                    : "text-gray-400 hover:text-white"
-                }
-              `}
-            >
-              {t}
-            </button>
-
-          ))}
 
         </div>
 
@@ -251,7 +256,7 @@ const OrderDetails = ({ order, onBack }) => {
 
 
       {/* Totals */}
-      <div className="mt-6 flex flex-col gap-3">
+      <div className="py-6 flex flex-col gap-3">
 
         {/* Subtotal */}
         <div className="flex items-center justify-between text-sm">
@@ -297,24 +302,70 @@ const OrderDetails = ({ order, onBack }) => {
       </div>
 
 
-      {/* Confirm Order */}
-      <button
-        type="button"
-        className="
-          mt-8
-          w-full
-          rounded-2xl
-          bg-[#181818]
-          py-4
-          text-sm
-          font-bold
-          text-white
-          transition
-          hover:bg-black
-        "
-      >
-        Confirm Order
-      </button>
+      {error && (
+        <p className="mb-2 text-center text-xs text-red-400">{error}</p>
+      )}
+ 
+      {/* Status-driven actions */}
+      {isCancelled ? (
+        <p className="mt-8 w-full rounded-2xl bg-[#181818] py-4 text-center text-sm font-bold text-red-400">
+          Order Cancelled
+        </p>
+      ) : isDelivered ? (
+        <p className="mt-8 w-full rounded-2xl bg-[#181818] py-4 text-center text-sm font-bold text-green-400">
+          Order Delivered
+        </p>
+      ) : (
+        <>
+          {/* Advance to next status */}
+          <button
+            type="button"
+            onClick={() => handleAdvanceStatus(order?.id)}
+            disabled={updating}
+            className="
+              mt-8
+              w-full
+              rounded-2xl
+              bg-orange-600
+              py-4
+              text-sm
+              font-bold
+              text-white
+              transition
+              hover:bg-orange-700
+              disabled:cursor-not-allowed
+              disabled:opacity-60
+            "
+          >
+            {updating ? "Updating..." : nextLabel}
+          </button>
+          <br></br>
+          {/* Cancel only available before the order is confirmed */}
+          {status === "PLACED" && (
+            <button
+              type="button"
+              onClick={() => handleCancelOrder(order?.id)}
+              disabled={updating}
+              className="
+                mt-4
+                w-full
+                rounded-2xl
+                bg-[#181818]
+                py-4
+                text-sm
+                font-bold
+                text-white
+                transition
+                hover:bg-black
+                disabled:cursor-not-allowed
+                disabled:opacity-60
+              "
+            >
+              Cancel Order
+            </button>
+          )}
+        </>
+      )}
 
     </aside>
   );
