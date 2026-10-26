@@ -36,12 +36,10 @@ class AdminViewSet(viewsets.ModelViewSet):
         user = (request.user)
         serializer = UserDetailSerializer(user)
         return Response({
-            "ID" : serializer.data['id'],
-            "Profile Pic" : serializer.data['profile_pic'],
-            "Name" : serializer.data['name'],
-            "Phone" : serializer.data['phone'],
-            "Email" : serializer.data['email']
-        })
+            "error": False,
+            "data": serializer.data,
+            "message": "success"
+        }, status=status.HTTP_200_OK)
     
     # Pending Vendors List
     @action(detail=False, methods=['get'], url_path='pending/vendors', permission_classes=[IsAdmin])
